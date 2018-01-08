@@ -20,3 +20,13 @@ Save all your customer and privilage cards in one app.
 * **Add cards**
 * **See saved cards and show barcode**
 * **Show nearest store**
+
+### Prerequisites
+* **Data Source: https://developers.google.com/maps/documentation/android-api/**
+* **External Components: firebase**
+Review similar app from Goolgle Play Store:
+Ik was altijd klantenkaarten kwijt of had ze niet bij me. Mijn beurs was 15cm dik alleen al door klantenkaarten! Was een grote ergenis.
+Met deze app heb ik alle klantenkaarten altijd bij de hand.
+Hardest parts:
+* **Scanning the barcodes**
+* **Saving the barcodes to the user's profile**
