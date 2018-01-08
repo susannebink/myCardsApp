@@ -12,6 +12,7 @@ privilage card to shop.
 Save all your customer and privilage cards in one app.
 
 ### Visual Sketch
+<img src="doc/project_schets.png" alt="visual sketch" width="500" height="400"/>
 
 ### Main features
 * **Register**
