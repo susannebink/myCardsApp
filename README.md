@@ -25,6 +25,7 @@ Save all your customer and privilage cards in one app.
 ### Prerequisites
 * **Data Source: https://developers.google.com/maps/documentation/android-api/**
 * **External Components: firebase**
+* **API for barcode: https://developers.google.com/vision/android/barcodes-overview**
 
 #### Review similar app (Stocard):
 What makes my app different from the existing app is that the user can log in. That is usefull so that when you switch phones, you can
