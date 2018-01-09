@@ -12,10 +12,26 @@ privilage card to shop.
 Save all your customer and privilage cards in one app.
 
 ### Visual Sketch
+<img src="doc/project_schets.png" alt="visual sketch" width="700" height="400"/>
 
 ### Main features
 * **Register**
 * **Login**
 * **Add cards**
+* **Scan barcodes with backcamera**
 * **See saved cards and show barcode**
 * **Show nearest store**
+
+### Prerequisites
+* **Data Source: https://developers.google.com/maps/documentation/android-api/**
+* **External Components: firebase**
+* **API for barcode: https://developers.google.com/vision/android/barcodes-overview**
+
+#### Review similar app (Stocard):
+What makes my app different from the existing app is that the user can log in. That is usefull so that when you switch phones, you can
+easily get your cards back. Also you can share your account with the rest of the household. 
+
+
+#### Hardest parts:
+* **Scanning the barcodes**
+* **Saving the barcodes to the user's profile**
