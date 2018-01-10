@@ -12,23 +12,24 @@ Susanne Binkhorst
 Login Screen:
 * LogIn()
 * LogOut()
-* goToRegister() (onClickListener)
+* goToRegister() (onClick)
 
 Register Screen:
-* Register() (onClickListener)
+* Register() (onClick)
 * addUserToDatabase()
 
 Overview Screen:
 * logOut()
-* goToCard() (onClickListener Listview)
-* goToAddCard() (onClickListener)
+* goToCard() (onClick Listview)
+* goToAddCard() (onClick)
+* enlarge() (onClick)
 
 Add Card Screen:
 * scanCard()
 
 Save Card Screen:
 * getBarcodeInfo()
-* addCardToDatabase() (onClickListener)
+* addCardToDatabase() (onClick)
 
 Show Card Screen:
 * getCardFromDatabase()
