@@ -11,7 +11,6 @@ Susanne Binkhorst
 
 Login Screen:
 * LogIn()
-* LogOut()
 * goToRegister() (onClick)
 
 Register Screen:
