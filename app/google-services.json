@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "479831203375",
+    "firebase_url": "https://mycardsapp-7b3d9.firebaseio.com",
+    "project_id": "mycardsapp-7b3d9",
+    "storage_bucket": "mycardsapp-7b3d9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:479831203375:android:798fbc79d7a6aa2a",
+        "android_client_info": {
+          "package_name": "com.example.susanne.mycardsapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "479831203375-a21n7d1epkg7q97o8jvqjls3r55jeao4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.susanne.mycardsapp",
+            "certificate_hash": "223f80cdd65937ade687cbe7a51435b2aceff832"
+          }
+        },
+        {
+          "client_id": "479831203375-jq606ejvgh0daignj4mjgs2nq2haua1p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCy5m0W6AGFQLK7pgvl0ktRdKWqSx2r4cc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "479831203375-jq606ejvgh0daignj4mjgs2nq2haua1p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
