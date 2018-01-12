@@ -85,4 +85,9 @@ public class RegisterActivity extends AppCompatActivity {
         User nUser = new User();
         databaseReference.child(id).setValue(nUser);
     }
+
+    public void goToOverview(View view) {
+        Intent intent = new Intent(this, OverviewActivity.class);
+        startActivity(intent);
+    }
 }

@@ -93,4 +93,9 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(intent);
     }
+
+    public void goToOverview(View view) {
+        Intent intent = new Intent(this, OverviewActivity.class);
+        startActivity(intent);
+    }
 }
