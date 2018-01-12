@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -63,7 +65,21 @@ public class OverviewActivity extends AppCompatActivity {
 
     public void goToAddCard(View view) {
         Intent intent = new Intent(OverviewActivity.this, AddCardActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0 && resultCode == CommonStatusCodes.SUCCESS && data != null){
+            Barcode barcode = data.getParcelableExtra("barcode");
+            Intent intent = new Intent(this, SaveCardActivity.class);
+            intent.putExtra("barcode", barcode);
+            startActivity(intent);
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     public void goToShowCard(View view) {

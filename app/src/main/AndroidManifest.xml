@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.susanne.mycardsapp">
 
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,7 +22,7 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".AddCardActivity" />
         <activity android:name=".ShowCardActivity" />
-        <activity android:name=".SaveCardActivity"></activity>
+        <activity android:name=".SaveCardActivity" />
     </application>
 
 </manifest>
