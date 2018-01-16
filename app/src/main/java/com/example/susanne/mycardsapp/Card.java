@@ -19,4 +19,9 @@ public class Card {
     public String getName(){
         return this.storeName;
     }
+
+    public String getBarcode(){
+        return this.barcode;
+    }
+
 }

@@ -26,6 +26,17 @@ public class User {
         return allNames;
     }
 
+    public String getCardBarcode(String name){
+        String barcode = "";
+        for (int i = 0; i < cards.size(); i++){
+            Card store = cards.get(i);
+            if (store.getName().equals(name)){
+                barcode = store.getBarcode();
+            }
+        }
+        return barcode;
+    }
+
     public void addCard(Card aCard){
         cards.add(aCard);
     }

@@ -83,7 +83,8 @@ public class RegisterActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         String id = user.getUid();
         User nUser = new User();
-        databaseReference.child(id).setValue(nUser);
+
+        databaseReference.child(id).setValue(id);
     }
 
     public void goToOverview(View view) {

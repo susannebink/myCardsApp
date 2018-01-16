@@ -18,35 +18,19 @@
         android:text="Sla kaart op"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
         android:textSize="36sp"
-        app:layout_constraintBottom_toTopOf="@+id/name"
+        app:layout_constraintBottom_toTopOf="@+id/store_spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/barcode"
-        android:layout_width="wrap_content"
+    <Spinner
+        android:id="@+id/store_spinner"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
-        android:layout_marginTop="40dp"
-        android:text="Hier komt de gescande barcode te staan"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/addCard"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name" />
-
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:layout_marginTop="48dp"
-        android:text="Hier komt de naam van de winkel te staan"
-        android:textSize="24sp"
+        android:layout_marginTop="43dp"
         app:layout_constraintBottom_toTopOf="@+id/barcode"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
@@ -58,11 +42,21 @@
         android:layout_marginBottom="188dp"
         android:layout_marginEnd="136dp"
         android:layout_marginStart="136dp"
-        android:layout_marginTop="56dp"
-        android:text="Voeg toe"
         android:onClick="addCardToDB"
+        android:text="Voeg toe"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/barcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="34dp"
+        android:layout_marginTop="75dp"
+        app:layout_constraintBottom_toTopOf="@+id/addCard"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barcode" />
+        app:layout_constraintTop_toBottomOf="@+id/store_spinner"
+        app:srcCompat="@drawable/common_full_open_on_phone" />
 </android.support.constraint.ConstraintLayout>

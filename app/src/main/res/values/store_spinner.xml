@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="store_array">
+        <item>Selecteer de winkel</item>
+        <item>Albert Heijn</item>
+        <item>Kruidvat</item>
+        <item>Etos</item>
+        <item>Vomar</item>
+        <item>Dekamarkt</item>
+        <item>DA</item>
+        <item>Gamma</item>
+        <item>Praxis</item>
+        <item>Ici Paris</item>
+        <item>C&amp;A</item>
+        <item>H&amp;M</item>
+        <item>WE</item>
+        <item>Douglas</item>
+        <item>Gall&amp;Gall</item>
+        <item>Karwei</item>
+        <item>IKEA</item>
+        <item>Hornbach</item>
+        <item>Body Shop</item>
+        <item>Decatlon</item>
+        <item>Hünkemoller</item>
+        <item>Bever</item>
+        <item>ANWB</item>
+        <item>Makro</item>
+        <item>MediaMarkt</item>
+        <item>Welkoop</item>
+        <item>FreeBees</item>
+        <item>Sligro</item>
+        <item>Bart Smit</item>
+        <item>Intertoys</item>
+        <item>Air Miles</item>
+        <item>Bruna</item>
+        <item>Coop</item>
+        <item>De Tuinen</item>
+        <item>Dirk</item>
+        <item>Douwe Egberts</item>
+    </string-array>
+</resources>
