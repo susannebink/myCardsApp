@@ -31,6 +31,7 @@ public class SaveCardActivity extends AppCompatActivity {
     ImageView barcodeView;
     Barcode barcode;
     Spinner spinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +96,14 @@ public class SaveCardActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     User thisUser = dataSnapshot.child(id).getValue(User.class);
-                    thisUser.addCard(nCard);
+                    if (thisUser == null){
+                        User nUser = new User();
+                        nUser.addCard(nCard);
+                        databaseReference.child(id).setValue(nUser);
+                    }
+                    else {
+                        thisUser.addCard(nCard);
+                    }
                 }
 
                 @Override
