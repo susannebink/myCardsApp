@@ -1,20 +1,21 @@
 package com.example.susanne.mycardsapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,12 +26,15 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import java.util.ArrayList;
+
 public class SaveCardActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     FirebaseAuth mAuth;
     ImageView barcodeView;
     Barcode barcode;
     Spinner spinner;
+    String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +43,7 @@ public class SaveCardActivity extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-
+        id = mAuth.getUid();
         spinner = findViewById(R.id.store_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.store_array, android.R.layout.simple_spinner_item);
@@ -84,25 +88,54 @@ public class SaveCardActivity extends AppCompatActivity {
         return barcodeBitmap;
     }
     public void addCardToDB(View view) {
-        String chosen = spinner.getSelectedItem().toString();
+        final String chosen = spinner.getSelectedItem().toString();
         if (chosen.equals("Selecteer de winkel")){
             Toast.makeText(this, "Selecteer een winkel", Toast.LENGTH_LONG).show();
         }
         else {
             final Card nCard = new Card(chosen, barcode.rawValue);
-            final String id = mAuth.getCurrentUser().getUid();
 
-            databaseReference.addValueEventListener(new ValueEventListener() {
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    User thisUser = dataSnapshot.child(id).getValue(User.class);
+                    final User thisUser = dataSnapshot.child(id).getValue(User.class);
                     if (thisUser == null){
-                        User nUser = new User();
+                        User nUser = new User(new ArrayList<Card>());
                         nUser.addCard(nCard);
                         databaseReference.child(id).setValue(nUser);
                     }
                     else {
-                        thisUser.addCard(nCard);
+                        if (thisUser.checkCard(chosen)){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this);
+                            builder.setMessage("U heeft deze kaart al toegevoegd. Wilt u de barcode updaten?").setTitle("Barcode updaten");
+                            builder.setPositiveButton("Ja, update deze barcode", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int i) {
+                                    thisUser.updateCard(chosen, barcode.rawValue);
+                                    databaseReference.child(id).setValue(thisUser);
+                                    dialog.cancel();
+                                    Intent intent = new Intent(SaveCardActivity.this, OverviewActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+                            builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Intent intent = new Intent(SaveCardActivity.this, OverviewActivity.class);
+                                    dialog.cancel();
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                        else {
+                            thisUser.addCard(nCard);
+                            databaseReference.child(id).setValue(thisUser);
+                            Intent intent = new Intent(SaveCardActivity.this, OverviewActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
                     }
                 }
 
@@ -111,10 +144,11 @@ public class SaveCardActivity extends AppCompatActivity {
                     Toast.makeText(SaveCardActivity.this, "Kon gegevens niet opvragen",Toast.LENGTH_LONG).show();
                 }
             });
-            Intent intent = new Intent(SaveCardActivity.this, OverviewActivity.class);
-            startActivity(intent);
-            finish();
         }
+
+    }
+
+    public void makeDialog(){
 
     }
 }

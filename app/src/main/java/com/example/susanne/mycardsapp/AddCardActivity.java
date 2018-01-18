@@ -42,6 +42,9 @@ public class AddCardActivity extends AppCompatActivity implements BarcodeReader.
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(AddCardActivity.this, AddCardActivity.class);
+                startActivity(intent);
+                finish();
 
             } else {
 

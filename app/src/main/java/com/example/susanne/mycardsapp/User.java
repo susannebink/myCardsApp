@@ -12,8 +12,8 @@ public class User {
 
     public User() {}
 
-    public void User(){
-        this.cards = new ArrayList<>();
+    public User(ArrayList<Card> nCards){
+        this.cards = nCards;
     }
 
     public ArrayList<String> getCardNames(){
@@ -38,8 +38,28 @@ public class User {
     }
 
     public void addCard(Card aCard){
-        cards.add(aCard);
+        this.cards.add(aCard);
     }
 
+    public boolean checkCard(String cardName){
+        List<Card> allCards = this.cards;
+        for (int i = 0; i < allCards.size(); i++){
+            String name = allCards.get(i).getName();
+            if (name.equals(cardName)){
+                return true;
+            }
+        }
+        return false;
+    }
 
+    public void updateCard(String cardName, String newBarcode){
+        List<Card> allCards = this.cards;
+        for (int i = 0; i < allCards.size(); i++){
+            Card currentCard = allCards.get(i);
+            String name = currentCard.getName();
+            if (name.equals(cardName)){
+                currentCard.barcode = newBarcode;
+            }
+        }
+    }
 }
