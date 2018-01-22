@@ -25,37 +25,38 @@
         android:id="@+id/cardBarcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="384dp"
+        android:layout_marginBottom="7dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="183dp"
+        android:layout_marginTop="102dp"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/barcodeNumber"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/storeName" />
 
     <TextView
         android:id="@+id/barcodeNumber"
         android:layout_width="wrap_content"
-        android:layout_height="31dp"
-        android:layout_marginBottom="353dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="45dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="183dp"
+        android:layout_marginTop="7dp"
         android:background="#FFFFFF"
         android:textColor="@color/colorAccent"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/myMap"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/cardBarcode" />
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/myMap"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="200sp"
+        android:layout_height="200sp"
         android:layout_marginBottom="115dp"
         android:layout_marginEnd="155dp"
         android:layout_marginStart="155dp"
@@ -63,5 +64,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/storeName" />
+        app:layout_constraintTop_toBottomOf="@+id/storeName"
+        app:layout_constraintVertical_bias="0.505"
+        tools:context=".ShowCardActivity" />
+
 </android.support.constraint.ConstraintLayout>
