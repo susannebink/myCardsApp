@@ -16,56 +16,77 @@
         android:layout_marginTop="32dp"
         android:text="Naam van de winkel"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
-        android:textSize="30sp"
+        android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/cardBarcode"
+    <fragment
+        android:id="@+id/myMap"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="269dp"
+        android:layout_marginTop="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mRadius"
+        tools:context=".ShowCardActivity" />
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="7dp"
+        android:layout_marginBottom="393dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="102dp"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/barcodeNumber"
+        android:layout_marginTop="68dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/storeName">
+
+        <ImageView
+            android:id="@+id/cardBarcode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/barcodeNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/mRadius"
+        android:layout_width="200sp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="17dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="182dp"
+        android:max="10000"
+        app:layout_constraintBottom_toTopOf="@+id/myMap"
+        app:layout_constraintEnd_toStartOf="@+id/showRadius"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/storeName" />
 
     <TextView
-        android:id="@+id/barcodeNumber"
+        android:id="@+id/showRadius"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="45dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="7dp"
-        android:background="#FFFFFF"
-        android:textColor="@color/colorAccent"
-        android:textSize="18sp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="45dp"
+        android:layout_marginTop="182dp"
         app:layout_constraintBottom_toTopOf="@+id/myMap"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardBarcode" />
-
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/myMap"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="200sp"
-        android:layout_height="200sp"
-        android:layout_marginBottom="115dp"
-        android:layout_marginEnd="155dp"
-        android:layout_marginStart="155dp"
-        android:layout_marginTop="330dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/storeName"
-        app:layout_constraintVertical_bias="0.505"
-        tools:context=".ShowCardActivity" />
+        app:layout_constraintStart_toEndOf="@+id/mRadius"
+        app:layout_constraintTop_toBottomOf="@+id/storeName" />
 
 </android.support.constraint.ConstraintLayout>

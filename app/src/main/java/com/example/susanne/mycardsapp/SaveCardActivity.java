@@ -44,6 +44,7 @@ public class SaveCardActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         id = mAuth.getUid();
+        Log.d("user id", id);
         spinner = findViewById(R.id.store_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.store_array, android.R.layout.simple_spinner_item);
@@ -59,9 +60,9 @@ public class SaveCardActivity extends AppCompatActivity {
         }
     }
 
-    Bitmap createBarcode(String data) throws WriterException {
-        int size_l = 600;
-        int size_w = 400;
+    static Bitmap createBarcode(String data) throws WriterException {
+        int size_l = 800;
+        int size_w = 500;
         MultiFormatWriter barcodeWriter = new MultiFormatWriter();
         Bitmap barcodeBitmap;
 
@@ -98,11 +99,15 @@ public class SaveCardActivity extends AppCompatActivity {
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    final User thisUser = dataSnapshot.child(id).getValue(User.class);
+                    id = mAuth.getUid();
+
+                    final User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
                     if (thisUser == null){
                         User nUser = new User(new ArrayList<Card>());
                         nUser.addCard(nCard);
-                        databaseReference.child(id).setValue(nUser);
+                        databaseReference.child("Users").child(id).setValue(nUser);
+                        Log.d("new user", id);
+                        goToOverview();
                     }
                     else {
                         if (thisUser.checkCard(chosen)){
@@ -111,19 +116,15 @@ public class SaveCardActivity extends AppCompatActivity {
                             builder.setPositiveButton("Ja, update deze barcode", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int i) {
                                     thisUser.updateCard(chosen, barcode.rawValue);
-                                    databaseReference.child(id).setValue(thisUser);
+                                    databaseReference.child("Users").child(id).setValue(thisUser);
                                     dialog.cancel();
-                                    Intent intent = new Intent(SaveCardActivity.this, OverviewActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    goToOverview();
                                 }
                             });
                             builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Intent intent = new Intent(SaveCardActivity.this, OverviewActivity.class);
                                     dialog.cancel();
-                                    startActivity(intent);
-                                    finish();
+                                    goToOverview();
                                 }
                             });
                             AlertDialog dialog = builder.create();
@@ -131,10 +132,8 @@ public class SaveCardActivity extends AppCompatActivity {
                         }
                         else {
                             thisUser.addCard(nCard);
-                            databaseReference.child(id).setValue(thisUser);
-                            Intent intent = new Intent(SaveCardActivity.this, OverviewActivity.class);
-                            startActivity(intent);
-                            finish();
+                            databaseReference.child("Users").child(id).setValue(thisUser);
+                            goToOverview();
                         }
                     }
                 }
@@ -148,7 +147,13 @@ public class SaveCardActivity extends AppCompatActivity {
 
     }
 
-    public void makeDialog(){
-
+    public void goToOverview(){
+        Intent intent = new Intent(SaveCardActivity.this, OverviewActivity.class);
+        startActivity(intent);
+        finish();
     }
+
+//    public void makeDialog(final User thisUser, final String chosen){
+//
+//    }
 }

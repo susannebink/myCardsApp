@@ -62,4 +62,15 @@ public class User {
             }
         }
     }
+
+    public void deleteCard(String cardName) {
+        List<Card> allCards = this.cards;
+        for (int i = 0; i < allCards.size(); i++){
+            Card currentCard = allCards.get(i);
+            String name = currentCard.getName();
+            if (name.equals(cardName)){
+                this.cards.remove(i);
+            }
+        }
+    }
 }

@@ -4,20 +4,37 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,12 +46,25 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCallback{
     DatabaseReference databaseReference;
     FirebaseAuth mAuth;
     ImageView barcode;
     TextView cardNumber;
+    TextView storeName;
+    TextView showRadius;
+    SeekBar radius;
     GoogleMap mMap;
+    Location myLocation;
+    Float DEFAULT_ZOOM = 13f;
     private FusedLocationProviderClient mClient;
     private Boolean locationPermission = false;
 
@@ -47,16 +77,38 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         mAuth = FirebaseAuth.getInstance();
 
         barcode = findViewById(R.id.cardBarcode);
-        TextView storeName = findViewById(R.id.storeName);
+        storeName = findViewById(R.id.storeName);
         cardNumber = findViewById(R.id.barcodeNumber);
+        radius = findViewById(R.id.mRadius);
+        showRadius = findViewById(R.id.showRadius);
 
         String store = getIntent().getStringExtra("store");
         storeName.setText(store);
+        showRadius.setText("0 km");
         getStoreCard(store);
-
+        setSeekBar();
 //        serviceOK();
         getLocationPermission();
 
+    }
+
+    private void setSeekBar() {
+        radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                showRadius.setText(progress + " km");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     public void getStoreCard(final String name){
@@ -65,7 +117,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User thisUser = dataSnapshot.child(id).getValue(User.class);
+                User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
                 String barcode = thisUser.getCardBarcode(name);
                 cardNumber.setText(barcode);
                 createImage(barcode);
@@ -81,39 +133,11 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
 
     public void createImage(String thisBarcode){
         try {
-            barcode.setImageBitmap(createBarcode(thisBarcode));
+            barcode.setImageBitmap(SaveCardActivity.createBarcode(thisBarcode));
         } catch (WriterException e) {
             e.printStackTrace();
             Toast.makeText(ShowCardActivity.this, "Barcode kon niet geladen worden", Toast.LENGTH_LONG).show();
         }
-    }
-
-    Bitmap createBarcode(String data) throws WriterException {
-        int size_l = 600;
-        int size_w = 400;
-        MultiFormatWriter barcodeWriter = new MultiFormatWriter();
-        Bitmap barcodeBitmap;
-        try {
-            BitMatrix barcodeBitMatrix = barcodeWriter.encode(data, BarcodeFormat.EAN_13, size_l, size_w);
-            barcodeBitmap = Bitmap.createBitmap(size_l, size_w, Bitmap.Config.ARGB_8888);
-            for (int x = 0; x < size_l; x++) {
-                for (int y = 0; y < size_w; y++) {
-                    barcodeBitmap.setPixel(x, y, barcodeBitMatrix.get(x, y) ?
-                            Color.BLACK : Color.WHITE);
-                }
-            }
-        }
-        catch (Exception e){
-            BitMatrix barcodeBitMatrix = barcodeWriter.encode(data, BarcodeFormat.CODE_39, size_l, size_w);
-            barcodeBitmap = Bitmap.createBitmap(size_l, size_w, Bitmap.Config.ARGB_8888);
-            for (int x = 0; x < size_l; x++) {
-                for (int y = 0; y < size_w; y++) {
-                    barcodeBitmap.setPixel(x, y, barcodeBitMatrix.get(x, y) ?
-                            Color.BLACK : Color.WHITE);
-                }
-            }
-        }
-        return barcodeBitmap;
     }
 
 //    public boolean serviceOK(){
@@ -151,7 +175,37 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
     private void getUserLocation(){
-        mClient = LocationServices.getFusedLocationClient(this);
+        mClient = LocationServices.getFusedLocationProviderClient(this);
+
+        try{
+            if(locationPermission){
+
+                final Task location = mClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful()){
+                            myLocation = (Location) task.getResult();
+
+                            moveCamera(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), DEFAULT_ZOOM);
+                            Log.d("location", "This is your location:" + myLocation.getLatitude() +"," + myLocation.getLongitude());
+
+                        }else{
+                            Toast.makeText(ShowCardActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }catch (SecurityException e){
+            Log.e("ShowCardActivity", "getDeviceLocation: SecurityException: " + e.getMessage() );
+        }
+    }
+
+    private void moveCamera(LatLng latLng, float zoom){
+        Log.d("ShowCardActivity", "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        getNearestStore();
     }
 
     @Override
@@ -176,12 +230,60 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
 
     private void initMap(){
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.myMap);
-
         mapFragment.getMapAsync(this);
+
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        if (locationPermission){
+            getUserLocation();
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        }
+    }
+
+    public void getNearestStore() {
+        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+
+                myLocation.getLatitude() +"," + myLocation.getLongitude() +
+                "&radius=2000&type=store&name="+ storeName.getText().toString() + "&key=AIzaSyC4vb2hh0SG8dPo1UuFnCxnE3D4Uk2fm3E";
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray results = response.getJSONArray("results");
+                            for (int i = 0; i < results.length(); i++){
+                                JSONObject thisStore = (JSONObject) results.get(i);
+                                JSONObject storeLocation = thisStore.getJSONObject("geometry").getJSONObject("location");
+                                String title = thisStore.getString("name");
+                                LatLng thisLocation = new LatLng(storeLocation.getDouble("lat"), storeLocation.getDouble("lng"));
+                                Log.d("thisstorelocation", thisLocation.toString());
+
+                                MarkerOptions options = new MarkerOptions()
+                                        .position(thisLocation);
+                                mMap.addMarker(options);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(ShowCardActivity.this, "That didn't work", Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(request);
     }
 }

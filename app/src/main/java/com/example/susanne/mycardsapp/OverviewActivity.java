@@ -1,8 +1,10 @@
 package com.example.susanne.mycardsapp;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -92,18 +94,17 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void showCardsOverview(){
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String id = mAuth.getUid();
-                User nUser = dataSnapshot.child(id).getValue(User.class);
+                User nUser = dataSnapshot.child("Users").child(id).getValue(User.class);
                 if (nUser == null){
                     Toast.makeText(OverviewActivity.this, "Uw lijst is nog leeg, voeg een kaart toe door " +
                             "op de 'Voeg een kaart toe' button te klikken", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    ArrayList<String> cardNames= nUser.getCardNames();
-                    setList(cardNames);
+                    setList(nUser);
                 }
             }
 
@@ -114,8 +115,9 @@ public class OverviewActivity extends AppCompatActivity {
         });
     }
 
-    public void setList(ArrayList<String> mCards){
-        ListView myCards = findViewById(R.id.myCards);
+    public void setList(User nUser){
+        final ArrayList<String> mCards = nUser.getCardNames();
+        final ListView myCards = findViewById(R.id.myCards);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, mCards);
         myCards.setAdapter(adapter);
@@ -128,6 +130,57 @@ public class OverviewActivity extends AppCompatActivity {
                 intent.putExtra("store", store);
                 Log.d("StoreName", store);
                 startActivity(intent);
+            }
+        });
+        myCards.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String thisCard = myCards.getItemAtPosition(position).toString();
+                removeCardFromDB(thisCard);
+                return true;
+            }
+        });
+    }
+
+    public void logOut(View view) {
+        mAuth.signOut();
+        Intent intent = new Intent(OverviewActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+
+    public void removeCardFromDB(final String name) {
+       databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final String id = mAuth.getUid();
+
+                final User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
+                AlertDialog.Builder builder = new AlertDialog.Builder(OverviewActivity.this);
+                builder.setMessage("Weet u zeker dat u deze kaart wilt verwijderen?").setTitle("Verwijder kaart");
+                builder.setPositiveButton("Ja, verwijder deze kaart", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int i) {
+                        thisUser.deleteCard(name);
+                        databaseReference.child("Users").child(id).setValue(thisUser);
+                        dialog.cancel();
+                        setList(thisUser);
+//                        refreshOverview();
+                    }
+                });
+                builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+//                        refreshOverview();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(OverviewActivity.this, "Kon gegevens niet opvragen",Toast.LENGTH_LONG).show();
             }
         });
     }
