@@ -1,17 +1,15 @@
 package com.example.susanne.mycardsapp;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -33,6 +31,7 @@ public class OverviewActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     int numberOfFavorites;
+    int numberOfNormal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +77,6 @@ public class OverviewActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(mAuthListener);
     }
 
-    public void goToAddCard(View view) {
-        Intent intent = new Intent(OverviewActivity.this, AddCardActivity.class);
-        startActivityForResult(intent, 0);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -98,7 +92,6 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void showCardsOverview(){
-
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -109,10 +102,8 @@ public class OverviewActivity extends AppCompatActivity {
                             "op de 'Voeg een kaart toe' button te klikken", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    setList(nUser);
-                }
+                    setList(nUser);}
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(OverviewActivity.this, "Kon gevraagde gegevens niet opvragen", Toast.LENGTH_LONG).show();
@@ -124,7 +115,7 @@ public class OverviewActivity extends AppCompatActivity {
         final ArrayList<String> mFavoCards = nUser.getFavorites();
         final ArrayList<String> mCards = nUser.getCardNames();
         numberOfFavorites = mFavoCards.size();
-        final int numberOfNormal = mCards.size();
+        numberOfNormal = mCards.size();
 
         ArrayList<String> allCards = new ArrayList<>();
         final ListView myCards = findViewById(R.id.myCards);
@@ -136,11 +127,15 @@ public class OverviewActivity extends AppCompatActivity {
                 allCards.add("Overige Kaarten:");
                 allCards.addAll(mCards);
             }
-        }
-        else{
-            allCards.addAll(mCards);
-        }
-        ArrayAdapter cardsAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, allCards){
+        } else{
+            allCards.addAll(mCards); }
+        myCards.setAdapter(makeCardsAdapter(allCards));
+        myCards.setOnItemClickListener(new ListOnItemClickListener());
+        myCards.setOnItemLongClickListener(new ListOnItemLongClickListener());
+    }
+
+    public ArrayAdapter makeCardsAdapter(ArrayList<String> allCards){
+        return new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, allCards){
             @Override
             public boolean isEnabled(int position) {
                 if ((numberOfFavorites > 0 && numberOfNormal == 0 && position == 0)){
@@ -153,14 +148,9 @@ public class OverviewActivity extends AppCompatActivity {
                     return true;
                 }
             }
-
-
         };
-        myCards.setAdapter(cardsAdapter);
-        myCards.setOnItemClickListener(new ListOnItemClickListener());
-        myCards.setOnItemLongClickListener(new ListOnItemLongClickListener());
-
     }
+
     private class ListOnItemLongClickListener implements AdapterView.OnItemLongClickListener{
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -187,6 +177,12 @@ public class OverviewActivity extends AppCompatActivity {
         }
     }
 
+
+    public void goToAddCard(View view) {
+        Intent intent = new Intent(OverviewActivity.this, AddCardActivity.class);
+        startActivityForResult(intent, 0);
+    }
+
     public void logOut(View view) {
         mAuth.signOut();
         Intent intent = new Intent(OverviewActivity.this, LoginActivity.class);
@@ -199,26 +195,9 @@ public class OverviewActivity extends AppCompatActivity {
        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final String id = mAuth.getUid();
-
-                final User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
-                AlertDialog.Builder builder = new AlertDialog.Builder(OverviewActivity.this);
-                builder.setMessage("Weet u zeker dat u deze kaart wilt verwijderen?").setTitle("Verwijder kaart");
-                builder.setPositiveButton("Ja, verwijder deze kaart", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int i) {
-                        thisUser.deleteCard(name);
-                        databaseReference.child("Users").child(id).setValue(thisUser);
-                        dialog.cancel();
-                        setList(thisUser);
-                    }
-                });
-                builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                String id = mAuth.getUid();
+                User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
+                createDialog(thisUser, id, name);
             }
 
             @Override
@@ -226,5 +205,25 @@ public class OverviewActivity extends AppCompatActivity {
                 Toast.makeText(OverviewActivity.this, "Kon gegevens niet opvragen",Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void createDialog(final User nUser, final String id, final String name){
+        AlertDialog.Builder builder = new AlertDialog.Builder(OverviewActivity.this);
+        builder.setMessage("Weet u zeker dat u deze kaart wilt verwijderen?").setTitle("Verwijder kaart");
+        builder.setPositiveButton("Ja, verwijder deze kaart", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int i) {
+                nUser.deleteCard(name);
+                databaseReference.child("Users").child(id).setValue(nUser);
+                dialog.cancel();
+                setList(nUser);
+            }
+        });
+        builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

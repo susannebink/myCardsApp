@@ -7,8 +7,8 @@
     android:ellipsize="marquee"
     android:paddingBottom="4sp"
     android:paddingStart="8sp"
+    android:paddingEnd="0sp"
     android:paddingTop="4sp"
     android:singleLine="true"
-    android:text="hallo"
     android:textColor="#ffffff"
-    android:textSize="24sp" />
+    android:textSize="20sp" />

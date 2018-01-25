@@ -19,12 +19,16 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    EditText get_email;
+    EditText get_password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mAuth = FirebaseAuth.getInstance();
+        get_email = findViewById(R.id.email);
+        get_password = findViewById(R.id.password);
         setListener();
     }
 
@@ -56,18 +60,10 @@ public class LoginActivity extends AppCompatActivity {
 
     // Function for the log in of a user, validates email and password
     public void signIn(View view) {
-        EditText get_email = findViewById(R.id.email);
-        EditText get_password = findViewById(R.id.password);
-
         String email = get_email.getText().toString();
         String password = get_password.getText().toString();
-        if (email.equals("")){
-            Toast.makeText(this, "Voer uw e-mail in", Toast.LENGTH_SHORT).show();
-        }
-        else if (password.equals("")){
-            Toast.makeText(this, "Voer uw wachtwoord in", Toast.LENGTH_SHORT).show();
-        }
-        else {
+
+        if(checkEditText(email, password)){
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -75,9 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("sign in success", "signInWithEmail:success");
-                                Intent intent = new Intent(LoginActivity.this, OverviewActivity.class);
-                                startActivity(intent);
-                                finish();
+                                goToOverview();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w("sign in fail", "signInWithEmail:failure", task.getException());
@@ -89,13 +83,26 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    public boolean checkEditText(String email, String password){
+        if (email.equals("")){
+            Toast.makeText(this, "Voer uw e-mail in", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        else if (password.equals("")) {
+            Toast.makeText(this, "Voer uw wachtwoord in", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
     public void goToRegister(View view) {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(intent);
     }
 
-    public void goToOverview(View view) {
+    public void goToOverview() {
         Intent intent = new Intent(this, OverviewActivity.class);
         startActivity(intent);
+        finish();
     }
 }

@@ -22,6 +22,9 @@ import java.util.List;
 public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     DatabaseReference databaseReference;
+    EditText get_email;
+    EditText get_password;
+    EditText get_confirmation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,34 +32,20 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         mAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        get_email = findViewById(R.id.email);
+        get_password = findViewById(R.id.password);
+        get_confirmation = findViewById(R.id.confirm);
     }
 
     // Function for signing up a user, validates the email
     public void signUp(View view){
-        EditText get_email = findViewById(R.id.email);
-        EditText get_password = findViewById(R.id.password);
-        EditText get_confirmation = findViewById(R.id.confirm);
-
         String email = get_email.getText().toString();
         String password = get_password.getText().toString();
         String confirmation = get_confirmation.getText().toString();
 
-        // Check if email and password aren't blank and checks if password is longer than six characters
-        if (email.equals("")){
-            Toast.makeText(this, "Voer uw e-mail in", Toast.LENGTH_SHORT).show();
-        }
-        else if (password.equals("")){
-            Toast.makeText(this, "Voer een wachtwoord in", Toast.LENGTH_SHORT).show();
-        }
-        else if (password.length() < 6){
-            Toast.makeText(this, "Wachtwoord moet langer zijn dan zes tekens", Toast.LENGTH_SHORT).show();
-        }
-        else if (!password.equals(confirmation)){
-            Toast.makeText(this, "De wachtwoorden moeten overeen komen", Toast.LENGTH_SHORT).show();
-        }
-
         // Sign user up is everything was correct
-        else {
+        if(checkEditText(email, password, confirmation)) {
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -64,10 +53,8 @@ public class RegisterActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("create user", "createUserWithEmail:success");
-                                addUserToDatabase();
-                                Intent intent = new Intent(RegisterActivity.this, OverviewActivity.class);
-                                startActivity(intent);
-                                finish();
+//                                addUserToDatabase();
+                                goToOverview();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w("create user", "createUserWithEmail:failure", task.getException());
@@ -79,14 +66,36 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    public void addUserToDatabase(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        String id = user.getUid();
-        databaseReference.setValue(id);
+    public boolean checkEditText(String email, String password, String confirm){
+        // Check if email and password aren't blank and checks if password is longer than six characters
+        if (email.equals("")){
+            Toast.makeText(this, "Voer uw e-mail in", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        else if (password.equals("")){
+            Toast.makeText(this, "Voer een wachtwoord in", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        else if (password.length() < 6){
+            Toast.makeText(this, "Wachtwoord moet langer zijn dan zes tekens", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        else if (!password.equals(confirm)){
+            Toast.makeText(this, "De wachtwoorden moeten overeen komen", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
-    public void goToOverview(View view) {
+//    public void addUserToDatabase(){
+//        FirebaseUser user = mAuth.getCurrentUser();
+//        String id = user.getUid();
+//        databaseReference.setValue(id);
+//    }
+
+    public void goToOverview() {
         Intent intent = new Intent(this, OverviewActivity.class);
         startActivity(intent);
+        finish();
     }
 }

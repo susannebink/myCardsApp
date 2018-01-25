@@ -85,9 +85,9 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         store = getIntent().getStringExtra("store");
 
         setViews();
-        getStoreCard(store);
         setSeekBar();
         getLocationPermission();
+        getStoreCard(store);
     }
 
     private void setSeekBar() {
@@ -206,7 +206,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                     }
                     locationPermission = true;
                     initMap();
-                    Toast.makeText(ShowCardActivity.this, "init is ready", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -221,7 +220,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        Toast.makeText(ShowCardActivity.this, "map is klaar", Toast.LENGTH_LONG).show();
         if (locationPermission){
             getUserLocation();
 
@@ -248,15 +246,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                     public void onResponse(JSONObject response) {
                         try {
                             JSONArray results = response.getJSONArray("results");
-                            for (int i = 0; i < results.length(); i++){
-                                JSONObject thisStore = (JSONObject) results.get(i);
-                                JSONObject storeLocation = thisStore.getJSONObject("geometry").getJSONObject("location");
-                                LatLng thisLocation = new LatLng(storeLocation.getDouble("lat"), storeLocation.getDouble("lng"));
-
-                                MarkerOptions options = new MarkerOptions()
-                                        .position(thisLocation);
-                                mMap.addMarker(options);
-                            }
+                            setMarkers(results);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -268,6 +258,18 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
         queue.add(request);
+    }
+
+    public void setMarkers(JSONArray results) throws JSONException {
+        for (int i = 0; i < results.length(); i++){
+            JSONObject thisStore = (JSONObject) results.get(i);
+            JSONObject storeLocation = thisStore.getJSONObject("geometry").getJSONObject("location");
+            LatLng thisLocation = new LatLng(storeLocation.getDouble("lat"), storeLocation.getDouble("lng"));
+
+            MarkerOptions options = new MarkerOptions()
+                    .position(thisLocation);
+            mMap.addMarker(options);
+        }
     }
 
     public void setFavorites(View view) {
@@ -289,7 +291,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
@@ -308,7 +309,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         else{
             favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);
         }
-
         storeName.setText(store);
     }
 }
