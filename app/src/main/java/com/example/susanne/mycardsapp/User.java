@@ -20,8 +20,10 @@ public class User {
         List<Card> allCards = this.cards;
         ArrayList<String> allNames = new ArrayList<>() ;
         for (int i = 0; i < allCards.size(); i++){
-            String name = allCards.get(i).getName();
-            allNames.add(name);
+            Card thisCard = allCards.get(i);
+            if (!thisCard.favorite){
+                allNames.add(thisCard.storeName);
+            }
         }
         return allNames;
     }
@@ -67,9 +69,31 @@ public class User {
         List<Card> allCards = this.cards;
         for (int i = 0; i < allCards.size(); i++){
             Card currentCard = allCards.get(i);
-            String name = currentCard.getName();
+            String name = currentCard.storeName;
             if (name.equals(cardName)){
                 this.cards.remove(i);
+            }
+        }
+    }
+
+    public ArrayList<String> getFavorites(){
+        List<Card> allCards = this.cards;
+        ArrayList<String> favorites = new ArrayList<>() ;
+        for (int i = 0; i < allCards.size(); i++){
+            Card thisCard = allCards.get(i);
+            if (thisCard.favorite){
+                favorites.add(thisCard.storeName);
+            }
+        }
+        return favorites;
+    }
+
+    public void updateFavorite(String name){
+        for (int i = 0; i < this.cards.size(); i++){
+            Card currentCard = this.cards.get(i);
+            String cardName = currentCard.storeName;
+            if (name.equals(cardName)){
+                currentCard.setFavorite();
             }
         }
     }

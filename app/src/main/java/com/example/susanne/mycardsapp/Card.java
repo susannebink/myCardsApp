@@ -8,12 +8,14 @@ package com.example.susanne.mycardsapp;
 public class Card {
     public String storeName;
     public String barcode;
+    public Boolean favorite;
 
     public Card() {}
 
     public Card(String aName, String aBarcode){
         this.storeName = aName;
         this.barcode = aBarcode;
+        this.favorite = false;
     }
 
     public String getName(){
@@ -22,6 +24,16 @@ public class Card {
 
     public String getBarcode(){
         return this.barcode;
+    }
+
+    public void setFavorite(){
+        if (this.favorite){
+            this.favorite = false;
+        }
+        else {
+            this.favorite = true;
+        }
+
     }
 
 }

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class OverviewActivity extends AppCompatActivity {
     public DatabaseReference databaseReference;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    int numberOfFavorites;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,13 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        setListener();
+        showCardsOverview();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -88,12 +97,8 @@ public class OverviewActivity extends AppCompatActivity {
         }
     }
 
-    public void goToShowCard(View view) {
-        Intent intent = new Intent(OverviewActivity.this, ShowCardActivity.class);
-        startActivity(intent);
-    }
-
     public void showCardsOverview(){
+
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -116,30 +121,70 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void setList(User nUser){
+        final ArrayList<String> mFavoCards = nUser.getFavorites();
         final ArrayList<String> mCards = nUser.getCardNames();
+        numberOfFavorites = mFavoCards.size();
+        final int numberOfNormal = mCards.size();
+
+        ArrayList<String> allCards = new ArrayList<>();
         final ListView myCards = findViewById(R.id.myCards);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, mCards);
-        myCards.setAdapter(adapter);
+        if (numberOfFavorites > 0) {
+            allCards.add("Favoriete Kaarten:");
+            allCards.addAll(mFavoCards);
+            if (numberOfNormal > 0){
+                allCards.add("Overige Kaarten:");
+                allCards.addAll(mCards);
+            }
+        }
+        else{
+            allCards.addAll(mCards);
+        }
+        ArrayAdapter cardsAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, allCards){
+            @Override
+            public boolean isEnabled(int position) {
+                if ((numberOfFavorites > 0 && numberOfNormal == 0 && position == 0)){
+                    return false;
+                }
+                else if (numberOfNormal > 0 && numberOfFavorites > 0 && (position == numberOfFavorites + 1 || position == 0)){
+                    return false;
+                }
+                else{
+                    return true;
+                }
+            }
 
-        myCards.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String store = adapterView.getItemAtPosition(i).toString();
-                Intent intent = new Intent(OverviewActivity.this, ShowCardActivity.class);
-                intent.putExtra("store", store);
-                Log.d("StoreName", store);
-                startActivity(intent);
+
+        };
+        myCards.setAdapter(cardsAdapter);
+        myCards.setOnItemClickListener(new ListOnItemClickListener());
+        myCards.setOnItemLongClickListener(new ListOnItemLongClickListener());
+
+    }
+    private class ListOnItemLongClickListener implements AdapterView.OnItemLongClickListener{
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            String thisCard = parent.getItemAtPosition(position).toString();
+            removeCardFromDB(thisCard);
+            return true;
+        }
+    }
+
+    private class ListOnItemClickListener implements AdapterView.OnItemClickListener{
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            String store = adapterView.getItemAtPosition(i).toString();
+            Intent intent = new Intent(OverviewActivity.this, ShowCardActivity.class);
+            intent.putExtra("store", store);
+            if (i < numberOfFavorites+1 && numberOfFavorites != 0){
+                intent.putExtra("favorite", true);
             }
-        });
-        myCards.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String thisCard = myCards.getItemAtPosition(position).toString();
-                removeCardFromDB(thisCard);
-                return true;
+            else {
+                intent.putExtra("favorite", false);
             }
-        });
+            Log.d("StoreName", store);
+            startActivity(intent);
+        }
     }
 
     public void logOut(View view) {
@@ -165,13 +210,11 @@ public class OverviewActivity extends AppCompatActivity {
                         databaseReference.child("Users").child(id).setValue(thisUser);
                         dialog.cancel();
                         setList(thisUser);
-//                        refreshOverview();
                     }
                 });
                 builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
-//                        refreshOverview();
                     }
                 });
                 AlertDialog dialog = builder.create();

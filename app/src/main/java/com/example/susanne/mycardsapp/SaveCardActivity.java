@@ -47,8 +47,8 @@ public class SaveCardActivity extends AppCompatActivity {
         Log.d("user id", id);
         spinner = findViewById(R.id.store_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.store_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.array.store_array, R.layout.spinner_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
         barcodeView = findViewById(R.id.barcode);

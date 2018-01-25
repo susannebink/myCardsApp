@@ -1,6 +1,7 @@
 package com.example.susanne.mycardsapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -62,7 +64,10 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     TextView storeName;
     TextView showRadius;
     SeekBar radius;
+    String store;
     GoogleMap mMap;
+    Boolean isFavorite;
+    ImageButton favoriteButton;
     Location myLocation;
     Float DEFAULT_ZOOM = 13f;
     private FusedLocationProviderClient mClient;
@@ -76,32 +81,26 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
-        barcode = findViewById(R.id.cardBarcode);
-        storeName = findViewById(R.id.storeName);
-        cardNumber = findViewById(R.id.barcodeNumber);
-        radius = findViewById(R.id.mRadius);
-        showRadius = findViewById(R.id.showRadius);
+        isFavorite = getIntent().getBooleanExtra("favorite", false);
+        store = getIntent().getStringExtra("store");
 
-        String store = getIntent().getStringExtra("store");
-        storeName.setText(store);
-        showRadius.setText("0 km");
+        setViews();
         getStoreCard(store);
         setSeekBar();
-//        serviceOK();
         getLocationPermission();
-
     }
 
     private void setSeekBar() {
         radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                showRadius.setText(progress + " km");
+                showRadius.setText(progress + " m");
+                getNearestStore(progress);
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                Toast.makeText(ShowCardActivity.this, "Zoeken naar winkels...", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -139,22 +138,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
             Toast.makeText(ShowCardActivity.this, "Barcode kon niet geladen worden", Toast.LENGTH_LONG).show();
         }
     }
-
-//    public boolean serviceOK(){
-//        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ShowCardActivity.this);
-//
-//        if (available == ConnectionResult.SUCCESS){
-//            return true;
-//        }
-//        else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)){
-//            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(ShowCardActivity.this, available, ERROR_DIALOG_REQUEST);
-//            dialog.show();
-//        }
-//        else {
-//            Toast.makeText(ShowCardActivity.this, "Kan geen verzoeken doen voor map", Toast.LENGTH_LONG).show();
-//        }
-//        return false;
-//    }
 
     private void getLocationPermission(){
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -205,7 +188,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         Log.d("ShowCardActivity", "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
-        getNearestStore();
+        getNearestStore(radius.getProgress());
     }
 
     @Override
@@ -216,13 +199,14 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
             case 1111:{
                 if (grantResults.length > 0){
                     for (int i=0; i < grantResults.length; i++){
-                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                        if (grantResults[i] == PackageManager.PERMISSION_DENIED){
                             locationPermission = false;
                             return;
                         }
                     }
                     locationPermission = true;
                     initMap();
+                    Toast.makeText(ShowCardActivity.this, "init is ready", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -237,7 +221,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        Toast.makeText(ShowCardActivity.this, "map is klaar", Toast.LENGTH_LONG).show();
         if (locationPermission){
             getUserLocation();
 
@@ -248,14 +232,15 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
             }
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
         }
     }
 
-    public void getNearestStore() {
+    public void getNearestStore(int radius) {
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+
                 myLocation.getLatitude() +"," + myLocation.getLongitude() +
-                "&radius=2000&type=store&name="+ storeName.getText().toString() + "&key=AIzaSyC4vb2hh0SG8dPo1UuFnCxnE3D4Uk2fm3E";
-
+                "&radius="+ radius + "&type=store&name="+ storeName.getText().toString() + "&key=AIzaSyC4vb2hh0SG8dPo1UuFnCxnE3D4Uk2fm3E";
+        mMap.clear();
         RequestQueue queue = Volley.newRequestQueue(this);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -266,9 +251,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                             for (int i = 0; i < results.length(); i++){
                                 JSONObject thisStore = (JSONObject) results.get(i);
                                 JSONObject storeLocation = thisStore.getJSONObject("geometry").getJSONObject("location");
-                                String title = thisStore.getString("name");
                                 LatLng thisLocation = new LatLng(storeLocation.getDouble("lat"), storeLocation.getDouble("lng"));
-                                Log.d("thisstorelocation", thisLocation.toString());
 
                                 MarkerOptions options = new MarkerOptions()
                                         .position(thisLocation);
@@ -285,5 +268,47 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
         queue.add(request);
+    }
+
+    public void setFavorites(View view) {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User thisUser = dataSnapshot.child("Users").child(mAuth.getUid()).getValue(User.class);
+                thisUser.updateFavorite(storeName.getText().toString());
+                if (isFavorite){
+                    favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);
+                    isFavorite = false;
+                }
+                else{
+                    favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
+                    isFavorite = true;
+                }
+                databaseReference.child("Users").child(mAuth.getUid()).setValue(thisUser);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void setViews(){
+        barcode = findViewById(R.id.cardBarcode);
+        storeName = findViewById(R.id.storeName);
+        cardNumber = findViewById(R.id.barcodeNumber);
+        radius = findViewById(R.id.mRadius);
+        showRadius = findViewById(R.id.showRadius);
+        favoriteButton = findViewById(R.id.favorite);
+
+        if (isFavorite){
+            favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
+        }
+        else{
+            favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);
+        }
+
+        storeName.setText(store);
     }
 }
