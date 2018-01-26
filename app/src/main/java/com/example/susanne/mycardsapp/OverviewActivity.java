@@ -48,7 +48,6 @@ public class OverviewActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
-
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null){
                     Log.d("signed in", "OnAuthStateChanged:signed_in" + user.getUid());
@@ -128,7 +127,8 @@ public class OverviewActivity extends AppCompatActivity {
                 allCards.addAll(mCards);
             }
         } else{
-            allCards.addAll(mCards); }
+            allCards.addAll(mCards);
+        }
         myCards.setAdapter(makeCardsAdapter(allCards));
         myCards.setOnItemClickListener(new ListOnItemClickListener());
         myCards.setOnItemLongClickListener(new ListOnItemLongClickListener());
@@ -144,9 +144,7 @@ public class OverviewActivity extends AppCompatActivity {
                 else if (numberOfNormal > 0 && numberOfFavorites > 0 && (position == numberOfFavorites + 1 || position == 0)){
                     return false;
                 }
-                else{
-                    return true;
-                }
+                return true;
             }
         };
     }

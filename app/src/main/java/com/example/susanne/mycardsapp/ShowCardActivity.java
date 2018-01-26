@@ -1,12 +1,12 @@
 package com.example.susanne.mycardsapp;
+/**
+ * Google maps functions getLocationPermission, getUserLocation, moveCamera,
+ * onRequestPermissionResult, initMap and mapReady are partially from:
+ * https://github.com/mitchtabian/Google-Maps-Google-Places/tree/ab0337bee4f658c8708bf89ef7672bdf5de8669a
+ */
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -43,18 +43,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCallback{
     DatabaseReference databaseReference;
@@ -69,8 +62,8 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     Boolean isFavorite;
     ImageButton favoriteButton;
     Location myLocation;
+    private static final int REQUEST_CODE = 1111;
     Float DEFAULT_ZOOM = 13f;
-    private FusedLocationProviderClient mClient;
     private Boolean locationPermission = false;
 
     @Override
@@ -87,7 +80,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         setViews();
         setSeekBar();
         getLocationPermission();
-        getStoreCard(store);
+        getStoreCard();
     }
 
     private void setSeekBar() {
@@ -97,27 +90,24 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                 showRadius.setText(progress + " m");
                 getNearestStore(progress);
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 Toast.makeText(ShowCardActivity.this, "Zoeken naar winkels...", Toast.LENGTH_SHORT).show();
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
     }
 
-    public void getStoreCard(final String name){
+    public void getStoreCard(){
         final String id = mAuth.getUid();
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
-                String barcode = thisUser.getCardBarcode(name);
+                String barcode = thisUser.getCardBarcode(store);
                 cardNumber.setText(barcode);
                 createImage(barcode);
             }
@@ -150,19 +140,18 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                 initMap();
             }
             else {
-                ActivityCompat.requestPermissions(ShowCardActivity.this, permissions, 1111);
+                ActivityCompat.requestPermissions(ShowCardActivity.this, permissions, REQUEST_CODE);
             }
         }
         else {
-            ActivityCompat.requestPermissions(ShowCardActivity.this, permissions, 1111);
+            ActivityCompat.requestPermissions(ShowCardActivity.this, permissions, REQUEST_CODE);
         }
     }
-    private void getUserLocation(){
-        mClient = LocationServices.getFusedLocationProviderClient(this);
 
+    private void getUserLocation(){
+        FusedLocationProviderClient mClient = LocationServices.getFusedLocationProviderClient(this);
         try{
             if(locationPermission){
-
                 final Task location = mClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
@@ -171,8 +160,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                             myLocation = (Location) task.getResult();
 
                             moveCamera(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), DEFAULT_ZOOM);
-                            Log.d("location", "This is your location:" + myLocation.getLatitude() +"," + myLocation.getLongitude());
-
                         }else{
                             Toast.makeText(ShowCardActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
@@ -185,9 +172,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     private void moveCamera(LatLng latLng, float zoom){
-        Log.d("ShowCardActivity", "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
         getNearestStore(radius.getProgress());
     }
 
@@ -196,10 +181,10 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         locationPermission = false;
         switch (requestCode){
-            case 1111:{
+            case REQUEST_CODE:{
                 if (grantResults.length > 0){
-                    for (int i=0; i < grantResults.length; i++){
-                        if (grantResults[i] == PackageManager.PERMISSION_DENIED){
+                    for (int grantResult : grantResults) {
+                        if (grantResult == PackageManager.PERMISSION_DENIED) {
                             locationPermission = false;
                             return;
                         }

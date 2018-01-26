@@ -44,12 +44,8 @@ public class SaveCardActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         id = mAuth.getUid();
-        Log.d("user id", id);
-        spinner = findViewById(R.id.store_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.store_array, R.layout.spinner_item);
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+
+        setSpinner();
 
         barcodeView = findViewById(R.id.barcode);
         barcode = getIntent().getParcelableExtra("barcode");
@@ -58,6 +54,14 @@ public class SaveCardActivity extends AppCompatActivity {
         } catch (WriterException e) {
             Toast.makeText(this, "Barcode kon niet gegenereerd worden", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void setSpinner() {
+        spinner = findViewById(R.id.store_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.store_array, R.layout.spinner_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     static Bitmap createBarcode(String data) throws WriterException {
@@ -106,29 +110,11 @@ public class SaveCardActivity extends AppCompatActivity {
                         User nUser = new User(new ArrayList<Card>());
                         nUser.addCard(nCard);
                         databaseReference.child("Users").child(id).setValue(nUser);
-                        Log.d("new user", id);
                         goToOverview();
                     }
                     else {
                         if (thisUser.checkCard(chosen)){
-                            AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this);
-                            builder.setMessage("U heeft deze kaart al toegevoegd. Wilt u de barcode updaten?").setTitle("Barcode updaten");
-                            builder.setPositiveButton("Ja, update deze barcode", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int i) {
-                                    thisUser.updateCard(chosen, barcode.rawValue);
-                                    databaseReference.child("Users").child(id).setValue(thisUser);
-                                    dialog.cancel();
-                                    goToOverview();
-                                }
-                            });
-                            builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                    goToOverview();
-                                }
-                            });
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
+                            makeDialog(thisUser, chosen, barcode.rawValue);
                         }
                         else {
                             thisUser.addCard(nCard);
@@ -137,14 +123,32 @@ public class SaveCardActivity extends AppCompatActivity {
                         }
                     }
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     Toast.makeText(SaveCardActivity.this, "Kon gegevens niet opvragen",Toast.LENGTH_LONG).show();
                 }
             });
         }
-
+    }
+    public void makeDialog(final User nUser, final String chosen, final String barcode){
+        AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this);
+        builder.setMessage("U heeft deze kaart al toegevoegd. Wilt u de barcode updaten?").setTitle("Barcode updaten");
+        builder.setPositiveButton("Ja, update deze barcode", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int i) {
+                nUser.updateCard(chosen, barcode);
+                databaseReference.child("Users").child(id).setValue(nUser);
+                dialog.cancel();
+                goToOverview();
+            }
+        });
+        builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                goToOverview();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void goToOverview(){
@@ -152,8 +156,4 @@ public class SaveCardActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-//    public void makeDialog(final User thisUser, final String chosen){
-//
-//    }
 }
