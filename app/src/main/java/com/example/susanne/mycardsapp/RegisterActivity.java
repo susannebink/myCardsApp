@@ -46,24 +46,24 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Sign user up is everything was correct
         if(checkEditText(email, password, confirmation)) {
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d("create user", "createUserWithEmail:success");
-//                                addUserToDatabase();
-                                goToOverview();
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w("create user", "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(RegisterActivity.this, "Authenticatie mislukt",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+            FirebaseAuthentication(email, password);
         }
+    }
+    public void FirebaseAuthentication(String email, String password){
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            goToOverview();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(RegisterActivity.this, "Authenticatie mislukt",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     public boolean checkEditText(String email, String password, String confirm){
