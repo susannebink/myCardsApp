@@ -49,6 +49,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.example.susanne.mycardsapp.OverviewActivity.id;
+
 public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCallback{
     DatabaseReference databaseReference;
     FirebaseAuth mAuth;
@@ -101,8 +103,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     public void getStoreCard(){
-        final String id = mAuth.getUid();
-
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -124,7 +124,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         try {
             barcode.setImageBitmap(SaveCardActivity.createBarcode(thisBarcode));
         } catch (WriterException e) {
-            e.printStackTrace();
             Toast.makeText(ShowCardActivity.this, "Barcode kon niet geladen worden", Toast.LENGTH_LONG).show();
         }
     }
@@ -158,10 +157,9 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             myLocation = (Location) task.getResult();
-
                             moveCamera(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), DEFAULT_ZOOM);
                         }else{
-                            Toast.makeText(ShowCardActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ShowCardActivity.this, "Kon huidige locatie niet vinden", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -225,6 +223,10 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                 "&radius="+ radius + "&type=store&name="+ storeName.getText().toString() + "&key=AIzaSyC4vb2hh0SG8dPo1UuFnCxnE3D4Uk2fm3E";
         mMap.clear();
         RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(makeRequest(url));
+    }
+
+    public JsonObjectRequest makeRequest(String url){
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -242,7 +244,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                 Toast.makeText(ShowCardActivity.this, "That didn't work", Toast.LENGTH_SHORT).show();
             }
         });
-        queue.add(request);
+        return request;
     }
 
     public void setMarkers(JSONArray results) throws JSONException {
@@ -261,19 +263,17 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User thisUser = dataSnapshot.child("Users").child(mAuth.getUid()).getValue(User.class);
+                User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
                 thisUser.updateFavorite(storeName.getText().toString());
                 if (isFavorite){
                     favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);
                     isFavorite = false;
-                }
-                else{
+                } else{
                     favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
                     isFavorite = true;
                 }
-                databaseReference.child("Users").child(mAuth.getUid()).setValue(thisUser);
+                databaseReference.child("Users").child(id).setValue(thisUser);
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -287,13 +287,12 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         radius = findViewById(R.id.mRadius);
         showRadius = findViewById(R.id.showRadius);
         favoriteButton = findViewById(R.id.favorite);
+        storeName.setText(store);
 
         if (isFavorite){
             favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
-        }
-        else{
+        } else{
             favoriteButton.setImageResource(android.R.drawable.btn_star_big_off);
         }
-        storeName.setText(store);
     }
 }

@@ -32,6 +32,7 @@ public class OverviewActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     int numberOfFavorites;
     int numberOfNormal;
+    static String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class OverviewActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         setListener();
         showCardsOverview();
+        id = mAuth.getUid();
     }
 
     // Check if user is already signed in
@@ -94,7 +96,6 @@ public class OverviewActivity extends AppCompatActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String id = mAuth.getUid();
                 User nUser = dataSnapshot.child("Users").child(id).getValue(User.class);
                 if (nUser == null){
                     Toast.makeText(OverviewActivity.this, "Uw lijst is nog leeg, voeg een kaart toe door " +
@@ -193,9 +194,8 @@ public class OverviewActivity extends AppCompatActivity {
        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String id = mAuth.getUid();
                 User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
-                createDialog(thisUser, id, name);
+                createDialog(thisUser, name);
             }
 
             @Override
@@ -205,7 +205,7 @@ public class OverviewActivity extends AppCompatActivity {
         });
     }
 
-    public void createDialog(final User nUser, final String id, final String name){
+    public void createDialog(final User nUser, final String name){
         AlertDialog.Builder builder = new AlertDialog.Builder(OverviewActivity.this);
         builder.setMessage("Weet u zeker dat u deze kaart wilt verwijderen?").setTitle("Verwijder kaart");
         builder.setPositiveButton("Ja, verwijder deze kaart", new DialogInterface.OnClickListener() {
@@ -217,7 +217,7 @@ public class OverviewActivity extends AppCompatActivity {
             }
         });
         builder.setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+            public void onClick(DialogInterface dialog, int i) {
                 dialog.cancel();
             }
         });

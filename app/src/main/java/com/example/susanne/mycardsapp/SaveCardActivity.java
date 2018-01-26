@@ -28,13 +28,15 @@ import com.google.zxing.common.BitMatrix;
 
 import java.util.ArrayList;
 
+import static com.example.susanne.mycardsapp.OverviewActivity.id;
+
 public class SaveCardActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     FirebaseAuth mAuth;
     ImageView barcodeView;
     Barcode barcode;
     Spinner spinner;
-    String id;
+    String barcodeNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +45,15 @@ public class SaveCardActivity extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        id = mAuth.getUid();
 
         setSpinner();
 
         barcodeView = findViewById(R.id.barcode);
         barcode = getIntent().getParcelableExtra("barcode");
+        barcodeNumber = barcode.rawValue;
+
         try {
-            barcodeView.setImageBitmap(createBarcode(barcode.rawValue));
+            barcodeView.setImageBitmap(createBarcode(barcodeNumber));
         } catch (WriterException e) {
             Toast.makeText(this, "Barcode kon niet gegenereerd worden", Toast.LENGTH_SHORT).show();
         }
@@ -98,25 +101,20 @@ public class SaveCardActivity extends AppCompatActivity {
             Toast.makeText(this, "Selecteer een winkel", Toast.LENGTH_LONG).show();
         }
         else {
-            final Card nCard = new Card(chosen, barcode.rawValue);
-
+            final Card nCard = new Card(chosen, barcodeNumber);
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    id = mAuth.getUid();
-
                     final User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
                     if (thisUser == null){
                         User nUser = new User(new ArrayList<Card>());
                         nUser.addCard(nCard);
                         databaseReference.child("Users").child(id).setValue(nUser);
                         goToOverview();
-                    }
-                    else {
+                    } else {
                         if (thisUser.checkCard(chosen)){
-                            makeDialog(thisUser, chosen, barcode.rawValue);
-                        }
-                        else {
+                            makeDialog(thisUser, chosen);
+                        } else {
                             thisUser.addCard(nCard);
                             databaseReference.child("Users").child(id).setValue(thisUser);
                             goToOverview();
@@ -130,12 +128,12 @@ public class SaveCardActivity extends AppCompatActivity {
             });
         }
     }
-    public void makeDialog(final User nUser, final String chosen, final String barcode){
+    public void makeDialog(final User nUser, final String chosen){
         AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this);
         builder.setMessage("U heeft deze kaart al toegevoegd. Wilt u de barcode updaten?").setTitle("Barcode updaten");
         builder.setPositiveButton("Ja, update deze barcode", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int i) {
-                nUser.updateCard(chosen, barcode);
+                nUser.updateCard(chosen, barcodeNumber);
                 databaseReference.child("Users").child(id).setValue(nUser);
                 dialog.cancel();
                 goToOverview();
