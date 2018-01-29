@@ -19,7 +19,7 @@ No progress today, Android Studio won't run my apps. Can't check whether the act
 Get my Android Studio working again, no progress made on project.
 
 ### Day 7
-Firebase authentication works. Writing to database doesn't work yet. Barcode scanner works, now i have to find a way to reporduce a 
+Firebase authentication works. Writing to database doesn't work yet. Barcode scanner works, now I have to find a way to reporduce an 
 image of the barcode.
 
 ### Day 8 
@@ -33,3 +33,21 @@ No progress today, because of sickness.
 
 ### Day 11
 Google maps partially works, de user can see its location.
+
+### Day 12
+Google maps user can see location of nearest store in a range of 2000m.
+
+### Day 13
+User can now see location of nearest store in a range that can vary from 0 to 10000m.
+
+### Day 14
+Worked on layout today. Custom buttons, better UI, etc.
+
+### Day 15
+Worked on better code, smaller function, better variable names, no magic numbers, etc.
+
+### Day 16
+
+
+### Day 17
+
