@@ -27,8 +27,10 @@ public class AddCardActivity extends AppCompatActivity implements BarcodeReader.
         setContentView(R.layout.activity_add_card);
 
         // Check permission for camera use, if permission not yet granted, ask permission.
-        if (ActivityCompat.checkSelfPermission(AddCardActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(AddCardActivity.this, new String[]{Manifest.permission.CAMERA}, myCameraRequestCode);
+        if (ActivityCompat.checkSelfPermission(AddCardActivity.this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(AddCardActivity.this,
+                    new String[]{Manifest.permission.CAMERA}, myCameraRequestCode);
         }
 
     }
@@ -37,7 +39,8 @@ public class AddCardActivity extends AppCompatActivity implements BarcodeReader.
      * Get result from permission request.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == myCameraRequestCode) {
