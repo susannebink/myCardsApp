@@ -38,14 +38,18 @@ public class OverviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview);
+
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        id = mAuth.getUid();
+
         setListener();
         showCardsOverview();
-        id = mAuth.getUid();
     }
 
-    // Check if user is already signed in
+    /**
+     * Check if user is signed in, if not, go to LoginActivity.
+      */
     public void setListener(){
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -64,24 +68,34 @@ public class OverviewActivity extends AppCompatActivity {
         };
     }
 
+    /**
+     * If user navigates back via the back-button, check if user is still signed in and
+     * set the list with the cards again.
+     */
     @Override
     protected void onResume() {
         super.onResume();
         setListener();
         showCardsOverview();
     }
-
+    /**
+     * Check if user is signed in (non-null) and update UI accordingly.
+     */
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         mAuth.addAuthStateListener(mAuthListener);
     }
 
+    /**
+     * This function opens a barcodescanner in AdCardActivity. If a barcode is returned, start
+     * the SaveCardActivity and give the barcode as an extra with the intent.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == CommonStatusCodes.SUCCESS && data != null){
+        int REQUEST_CODE = 0;
+        if (requestCode == REQUEST_CODE && resultCode == CommonStatusCodes.SUCCESS && data != null) {
             Barcode barcode = data.getParcelableExtra("barcode");
             Intent intent = new Intent(this, SaveCardActivity.class);
             intent.putExtra("barcode", barcode);
@@ -92,6 +106,10 @@ public class OverviewActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Function to get the user's information (cards) from the firebase database. If the information
+     * is received, set the cards list.
+     */
     public void showCardsOverview(){
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -102,7 +120,8 @@ public class OverviewActivity extends AppCompatActivity {
                             "op de 'Voeg een kaart toe' button te klikken", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    setList(nUser);}
+                    setList(nUser);
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -111,30 +130,50 @@ public class OverviewActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This function sets to kinds of lists in one list in one listview, sets the adapter of the
+     * listview, the onItemClickListener and the onItemLongClickListener.
+     * @param nUser is the User class that was received from the database
+     */
     public void setList(User nUser){
+        // Get the arraylists with the cards from the user class.
         final ArrayList<String> mFavoCards = nUser.getFavorites();
         final ArrayList<String> mCards = nUser.getCardNames();
+
+        // Define the length of the lists.
         numberOfFavorites = mFavoCards.size();
         numberOfNormal = mCards.size();
 
+        // Make an new arraylist which will be used for the listview.
         ArrayList<String> allCards = new ArrayList<>();
         final ListView myCards = findViewById(R.id.myCards);
 
+        /*
+        * If the number of favorite cards is greater than zero, add this to allCards.
+        * If the number of normal cards is also creater than zero, add this too to allCards.
+         */
         if (numberOfFavorites > 0) {
             allCards.add("Favoriete Kaarten:");
             allCards.addAll(mFavoCards);
-            if (numberOfNormal > 0){
+            if (numberOfNormal > 0) {
                 allCards.add("Overige Kaarten:");
                 allCards.addAll(mCards);
             }
-        } else{
+        }
+        // If the user has no favorite cards, just add the normal cards to allCards.
+        else{
             allCards.addAll(mCards);
         }
+
+        // Set adapter and item click listeners for the listview.
         myCards.setAdapter(makeCardsAdapter(allCards));
         myCards.setOnItemClickListener(new ListOnItemClickListener());
         myCards.setOnItemLongClickListener(new ListOnItemLongClickListener());
     }
 
+    /**
+     * Make the adapter for the listview with cards. Disable the headers for click listeners.
+     */
     public ArrayAdapter makeCardsAdapter(ArrayList<String> allCards){
         return new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, allCards){
             @Override
@@ -150,6 +189,10 @@ public class OverviewActivity extends AppCompatActivity {
         };
     }
 
+    /**
+     * Define the on item long click listener for the myCards listview. The card that was clicked
+     * will be deleted from the database.
+     */
     private class ListOnItemLongClickListener implements AdapterView.OnItemLongClickListener{
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -159,29 +202,40 @@ public class OverviewActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Define the on item click listener for the myCards listview. The card that was clicked
+     * will be opened in ShowCardActivity.
+     */
     private class ListOnItemClickListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             String store = adapterView.getItemAtPosition(i).toString();
             Intent intent = new Intent(OverviewActivity.this, ShowCardActivity.class);
             intent.putExtra("store", store);
+
+            // Add the boolean favorite as an extra to the intent.
             if (i < numberOfFavorites+1 && numberOfFavorites != 0){
                 intent.putExtra("favorite", true);
             }
             else {
                 intent.putExtra("favorite", false);
             }
-            Log.d("StoreName", store);
+
             startActivity(intent);
         }
     }
 
-
+    /**
+     * On click for a button. Starts AddCardActivity.
+     */
     public void goToAddCard(View view) {
         Intent intent = new Intent(OverviewActivity.this, AddCardActivity.class);
         startActivityForResult(intent, 0);
     }
 
+    /**
+     * On click for a button. Signs out the user and starts LoginActivity.
+     */
     public void logOut(View view) {
         mAuth.signOut();
         Intent intent = new Intent(OverviewActivity.this, LoginActivity.class);
@@ -189,7 +243,9 @@ public class OverviewActivity extends AppCompatActivity {
         finish();
     }
 
-
+    /**
+     * Function to remove the given card (parameter name) from the user class and database.
+     */
     public void removeCardFromDB(final String name) {
        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -205,6 +261,11 @@ public class OverviewActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Creates an dialog that asks the user if he/she is sure to want to delete the selected card.
+     * If the user is sure to delete the card, the card is deleted from the user class and
+     * the user is updated in the database.
+     */
     public void createDialog(final User nUser, final String name){
         AlertDialog.Builder builder = new AlertDialog.Builder(OverviewActivity.this);
         builder.setMessage("Weet u zeker dat u deze kaart wilt verwijderen?").setTitle("Verwijder kaart");

@@ -32,7 +32,9 @@ public class LoginActivity extends AppCompatActivity {
         setListener();
     }
 
-    // Check if user is already signed in
+    /**
+     * Check if user is already signed in.
+      */
     public void setListener(){
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -55,7 +57,9 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(mAuthListener);
     }
 
-    // Function for the log in of a user, validates email and password
+    /**
+     * Function for the log in of a user, validates email and password.
+      */
     public void signIn(View view) {
         String email = get_email.getText().toString();
         String password = get_password.getText().toString();
@@ -80,6 +84,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+    * Function to check if the filled in email and password aren't empty.
+     */
     public boolean checkEditText(String email, String password){
         if (email.equals("")){
             Toast.makeText(this, "Voer uw e-mail in", Toast.LENGTH_SHORT).show();
@@ -92,11 +99,17 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+    * On click function for an intent to go to the register activity.
+     */
     public void goToRegister(View view) {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(intent);
     }
 
+    /**
+    * Function for an intent to go to the overview activity.
+     */
     public void goToOverview() {
         Intent intent = new Intent(this, OverviewActivity.class);
         startActivity(intent);

@@ -38,7 +38,10 @@ public class RegisterActivity extends AppCompatActivity {
         get_confirmation = findViewById(R.id.confirm);
     }
 
-    // Function for signing up a user, validates the email
+    /**
+     * Function for signing up a user, validates the email and signs up the user if everything is
+     * correct.
+      */
     public void signUp(View view){
         String email = get_email.getText().toString();
         String password = get_password.getText().toString();
@@ -49,25 +52,11 @@ public class RegisterActivity extends AppCompatActivity {
             FirebaseAuthentication(email, password);
         }
     }
-    public void FirebaseAuthentication(String email, String password){
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            goToOverview();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(RegisterActivity.this, "Authenticatie mislukt",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
 
+    /**
+     * Function for checking if all the editText fields are (correctly) filled in
+      */
     public boolean checkEditText(String email, String password, String confirm){
-        // Check if email and password aren't blank and checks if password is longer than six characters
         if (email.equals("")){
             Toast.makeText(this, "Voer uw e-mail in", Toast.LENGTH_SHORT).show();
             return false;
@@ -87,6 +76,29 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Function to sign up the user with Firebase.
+      */
+    public void FirebaseAuthentication(String email, String password){
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            goToOverview();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(RegisterActivity.this, "Authenticatie mislukt",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Function that starts OverviewActivity.
+     */
     public void goToOverview() {
         Intent intent = new Intent(this, OverviewActivity.class);
         startActivity(intent);

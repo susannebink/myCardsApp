@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.example.susanne.mycardsapp.OverviewActivity.id;
 
@@ -37,6 +39,8 @@ public class SaveCardActivity extends AppCompatActivity {
     Barcode barcode;
     Spinner spinner;
     String barcodeNumber;
+    EditText getStoreName;
+    String storeName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,8 @@ public class SaveCardActivity extends AppCompatActivity {
         setSpinner();
 
         barcodeView = findViewById(R.id.barcode);
+        getStoreName = findViewById(R.id.storeName);
+
         barcode = getIntent().getParcelableExtra("barcode");
         barcodeNumber = barcode.rawValue;
 
@@ -60,7 +66,7 @@ public class SaveCardActivity extends AppCompatActivity {
     }
 
     private void setSpinner() {
-        spinner = findViewById(R.id.store_spinner);
+        spinner = findViewById(R.id.storeSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.store_array, R.layout.spinner_item);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -95,38 +101,64 @@ public class SaveCardActivity extends AppCompatActivity {
         }
         return barcodeBitmap;
     }
-    public void addCardToDB(View view) {
-        final String chosen = spinner.getSelectedItem().toString();
-        if (chosen.equals("Selecteer de winkel")){
+
+    public void checkStoreName(View view){
+        final String store = getStoreName.getText().toString();
+        String chosen = spinner.getSelectedItem().toString();
+        if (chosen.equals("Selecteer de winkel") && store.equals("") ||
+                (!chosen.equals("Selecteer de winkel") && !store.equals(""))){
             Toast.makeText(this, "Selecteer een winkel", Toast.LENGTH_LONG).show();
         }
-        else {
-            final Card nCard = new Card(chosen, barcodeNumber);
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    final User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
-                    if (thisUser == null){
-                        User nUser = new User(new ArrayList<Card>());
-                        nUser.addCard(nCard);
-                        databaseReference.child("Users").child(id).setValue(nUser);
-                        goToOverview();
-                    } else {
-                        if (thisUser.checkCard(chosen)){
-                            makeDialog(thisUser, chosen);
-                        } else {
-                            thisUser.addCard(nCard);
-                            databaseReference.child("Users").child(id).setValue(thisUser);
-                            goToOverview();
-                        }
-                    }
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(SaveCardActivity.this, "Kon gegevens niet opvragen",Toast.LENGTH_LONG).show();
+        else if (!store.equals("")){
+            AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this);
+            builder.setMessage("Let op. Google map services werken niet bij een verkeerde winkelnaam").setTitle("Winkelnaam invoeren");
+            builder.setPositiveButton("Ik ga akkoord met deze naam", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int i) {
+                    storeName = store;
+                    dialog.cancel();
+                    addCardToDB();
                 }
             });
+            builder.setNegativeButton("Verander deze naam", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
+        else{
+            storeName = chosen;
+            addCardToDB();
+        }
+    }
+
+    public void addCardToDB() {
+        final Card nCard = new Card(storeName, barcodeNumber);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
+                if (thisUser == null){
+                    User nUser = new User(new ArrayList<Card>());
+                    nUser.addCard(nCard);
+                    databaseReference.child("Users").child(id).setValue(nUser);
+                    goToOverview();
+                } else {
+                    if (thisUser.checkCard(storeName)){
+                        makeDialog(thisUser, storeName);
+                    } else {
+                        thisUser.addCard(nCard);
+                        databaseReference.child("Users").child(id).setValue(thisUser);
+                        goToOverview();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(SaveCardActivity.this, "Kon gegevens niet opvragen",Toast.LENGTH_LONG).show();
+            }
+        });
     }
     public void makeDialog(final User nUser, final String chosen){
         AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this);

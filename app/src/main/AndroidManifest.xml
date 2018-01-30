@@ -25,7 +25,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-\
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -37,11 +37,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OverviewActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".AddCardActivity" />
-        <activity android:name=".ShowCardActivity" />
-        <activity android:name=".SaveCardActivity" />
+        <activity android:name=".OverviewActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".RegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".AddCardActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ShowCardActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".SaveCardActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
