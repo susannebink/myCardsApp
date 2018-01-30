@@ -6,6 +6,7 @@ package com.example.susanne.mycardsapp;
  */
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -58,6 +59,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     TextView cardNumber;
     TextView storeName;
     TextView showRadius;
+    ProgressDialog progressDialog;
     SeekBar radius;
     String store;
     GoogleMap mMap;
@@ -78,6 +80,12 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
 
         isFavorite = getIntent().getBooleanExtra("favorite", false);
         store = getIntent().getStringExtra("store");
+
+        progressDialog = new ProgressDialog(ShowCardActivity.this);
+        progressDialog.setTitle("Kaart aan het laden");
+        progressDialog.setMessage("Even geduld aub");
+        progressDialog.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progressDialog.show();
 
         setViews();
         setSeekBar();
@@ -110,18 +118,25 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
      */
     private void setSeekBar() {
         radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            // Set the progress of the seekbar in a textview so the user can keep track.
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 showRadius.setText(progress + " m");
-                getNearestStore(progress);
             }
+            // Alert the user that stores will be searched.
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
                 Toast.makeText(ShowCardActivity.this, "Zoeken naar winkels...",
                         Toast.LENGTH_SHORT).show();
             }
+            /*
+             * When user had stopped shifting the seekbar, search for the nearest store in the
+             * chosen radius.
+             */
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+                getNearestStore(progress);
             }
         });
     }
@@ -134,6 +149,8 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                // Get the information of the selected card.
                 User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
                 String barcode = thisUser.getCardBarcode(store);
                 cardNumber.setText(barcode);
@@ -154,6 +171,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     public void createImage(String thisBarcode){
         try {
             barcode.setImageBitmap(SaveCardActivity.createBarcode(thisBarcode));
+            progressDialog.dismiss();
         } catch (WriterException e) {
             Toast.makeText(ShowCardActivity.this, "Barcode kon niet geladen worden",
                     Toast.LENGTH_LONG).show();
@@ -176,11 +194,14 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                 locationPermission = true;
                 initMap();
             }
+
+            // Request permission.
             else {
                 ActivityCompat.requestPermissions(ShowCardActivity.this, permissions,
                         REQUEST_CODE);
             }
         }
+        // Request permission.
         else {
             ActivityCompat.requestPermissions(ShowCardActivity.this, permissions,
                     REQUEST_CODE);
@@ -268,7 +289,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.myMap);
         mapFragment.getMapAsync(this);
-
     }
 
     /**

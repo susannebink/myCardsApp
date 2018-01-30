@@ -1,5 +1,6 @@
 package com.example.susanne.mycardsapp;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ public class OverviewActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     int numberOfFavorites;
     int numberOfNormal;
+    ProgressDialog progressDialog;
     static String id;
 
     @Override
@@ -43,13 +45,19 @@ public class OverviewActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         id = mAuth.getUid();
 
+        progressDialog = new ProgressDialog(OverviewActivity.this);
+        progressDialog.setTitle("Kaarten aan het laden");
+        progressDialog.setMessage("Even geduld aub");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         setListener();
         showCardsOverview();
     }
 
     /**
      * Check if user is signed in, if not, go to LoginActivity.
-      */
+     */
     public void setListener(){
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -78,6 +86,7 @@ public class OverviewActivity extends AppCompatActivity {
         setListener();
         showCardsOverview();
     }
+
     /**
      * Check if user is signed in (non-null) and update UI accordingly.
      */
@@ -88,8 +97,8 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     /**
-     * This function opens a barcodescanner in AdCardActivity. If a barcode is returned, start
-     * the SaveCardActivity and give the barcode as an extra with the intent.
+     * This function opens a barcode scanner in AdCardActivity. If a barcode is returned, start
+     * the SaveCardActivity and give the barcode to the intent.
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -100,8 +109,8 @@ public class OverviewActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SaveCardActivity.class);
             intent.putExtra("barcode", barcode);
             startActivity(intent);
-
-        } else {
+        }
+        else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -133,10 +142,9 @@ public class OverviewActivity extends AppCompatActivity {
     /**
      * This function sets to kinds of lists in one list in one listview, sets the adapter of the
      * listview, the onItemClickListener and the onItemLongClickListener.
-     * @param nUser is the User class that was received from the database
      */
     public void setList(User nUser){
-        // Get the arraylists with the cards from the user class.
+        // Get the ArrayLists with the cards from the user class.
         final ArrayList<String> mFavoCards = nUser.getFavorites();
         final ArrayList<String> mCards = nUser.getCardNames();
 
@@ -144,14 +152,14 @@ public class OverviewActivity extends AppCompatActivity {
         numberOfFavorites = mFavoCards.size();
         numberOfNormal = mCards.size();
 
-        // Make an new arraylist which will be used for the listview.
+        // Make an new ArrayList which will be used for the ListView.
         ArrayList<String> allCards = new ArrayList<>();
         final ListView myCards = findViewById(R.id.myCards);
 
         /*
         * If the number of favorite cards is greater than zero, add this to allCards.
-        * If the number of normal cards is also creater than zero, add this too to allCards.
-         */
+        * If the number of normal cards is also greater than zero, add this too to allCards.
+        */
         if (numberOfFavorites > 0) {
             allCards.add("Favoriete Kaarten:");
             allCards.addAll(mFavoCards);
@@ -169,6 +177,7 @@ public class OverviewActivity extends AppCompatActivity {
         myCards.setAdapter(makeCardsAdapter(allCards));
         myCards.setOnItemClickListener(new ListOnItemClickListener());
         myCards.setOnItemLongClickListener(new ListOnItemLongClickListener());
+        progressDialog.dismiss();
     }
 
     /**
@@ -178,10 +187,15 @@ public class OverviewActivity extends AppCompatActivity {
         return new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, allCards){
             @Override
             public boolean isEnabled(int position) {
+                /*
+                 * Disable the headers for clicks. Depending on number of favorites and normal cards
+                 * the items should be disabled at certain positions.
+                 */
                 if ((numberOfFavorites > 0 && numberOfNormal == 0 && position == 0)){
                     return false;
                 }
-                else if (numberOfNormal > 0 && numberOfFavorites > 0 && (position == numberOfFavorites + 1 || position == 0)){
+                else if (numberOfNormal > 0 && numberOfFavorites > 0 &&
+                        (position == numberOfFavorites + 1 || position == 0)){
                     return false;
                 }
                 return true;
@@ -213,7 +227,7 @@ public class OverviewActivity extends AppCompatActivity {
             Intent intent = new Intent(OverviewActivity.this, ShowCardActivity.class);
             intent.putExtra("store", store);
 
-            // Add the boolean favorite as an extra to the intent.
+            // Give the boolean "favorite" to the intent.
             if (i < numberOfFavorites+1 && numberOfFavorites != 0){
                 intent.putExtra("favorite", true);
             }

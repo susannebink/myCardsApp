@@ -3,19 +3,19 @@ package com.example.susanne.mycardsapp;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-
-import com.google.android.gms.vision.barcode.Barcode;
 import android.util.SparseArray;
 import android.widget.Toast;
-import info.androidhive.barcode.BarcodeReader;
+
+import com.google.android.gms.vision.barcode.Barcode;
 
 import java.util.List;
+
+import info.androidhive.barcode.BarcodeReader;
 
 
 public class AddCardActivity extends AppCompatActivity implements BarcodeReader.BarcodeReaderListener{

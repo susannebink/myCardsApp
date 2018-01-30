@@ -4,10 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -28,7 +27,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Arrays;
 
 import static com.example.susanne.mycardsapp.OverviewActivity.id;
 
@@ -132,9 +131,17 @@ public class SaveCardActivity extends AppCompatActivity {
                 (!chosen.equals("Selecteer de winkel") && !store.equals(""))){
             Toast.makeText(this, "Selecteer een winkel", Toast.LENGTH_LONG).show();
         }
-        // If the user has filled in the store name in the edit text view, build a dialog.
+        // If the user has filled in the store name in the edit text view.
         else if (!store.equals("")){
-            setNameDialog(store);
+
+            // Check if the filled in name is also in the spinner, else create a dialog.
+            String[] storeArray = getResources().getStringArray(R.array.store_array);
+            if (Arrays.asList(storeArray).contains(store)){
+                storeName = store;
+                addCardToDB();
+            }else{
+                setNameDialog(store);
+            }
         }
         // If the user had chosen the store name from the spinner, add the card to the database.
         else{

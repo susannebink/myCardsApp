@@ -1,9 +1,9 @@
 package com.example.susanne.mycardsapp;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Check if user is already signed in.
-      */
+     */
     public void setListener(){
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Function for the log in of a user, validates email and password.
-      */
+     */
     public void signIn(View view) {
         String email = get_email.getText().toString();
         String password = get_password.getText().toString();
@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-    * Function to check if the filled in email and password aren't empty.
+     * Function to check if the filled in email and password aren't empty.
      */
     public boolean checkEditText(String email, String password){
         if (email.equals("")){
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-    * On click function for an intent to go to the register activity.
+     * On click function for an intent to go to the register activity.
      */
     public void goToRegister(View view) {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-    * Function for an intent to go to the overview activity.
+     * Function for an intent to go to the overview activity.
      */
     public void goToOverview() {
         Intent intent = new Intent(this, OverviewActivity.class);
