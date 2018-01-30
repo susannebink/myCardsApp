@@ -154,7 +154,7 @@ public class SaveCardActivity extends AppCompatActivity {
      * This function builds a dialog to alert the user about the given store name.
      */
     public void setNameDialog(final String store){
-        AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this, R.style.MyDialogTheme);
         builder.setMessage("Let op. Google map services werken niet bij een verkeerde winkelnaam")
                 .setTitle("Winkelnaam invoeren");
 
@@ -222,7 +222,7 @@ public class SaveCardActivity extends AppCompatActivity {
      * Make a dialog for the user to whether update the chosen card or cancel the action.
      */
     public void makeDialog(final User nUser, final String chosen){
-        AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SaveCardActivity.this, R.style.MyDialogTheme);
         builder.setMessage("U heeft deze kaart al toegevoegd. Wilt u de barcode updaten?")
                 .setTitle("Barcode updaten");
         // User wants to update the barcode in the database, update this barcode.

@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">myCardsApp</string>
+    <string name="overview_title">Mijn Kaarten</string>
+    <string name="e_mail">E-mail</string>
+    <string name="register_password">Wachtwoord (minimaal 6 tekens)</string>
+    <string name="registrer">Registreer</string>
+    <string name="confirm_password">Bevestig wachtwoord</string>
+    <string name="password">Wachtwoord</string>
+    <string name="log_in">Log In</string>
+    <string name="add_card">Voeg nieuwe kaart toe</string>
+    <string name="log_out">Log Uit</string>
+    <string name="add">Voeg toe</string>
+    <string name="choose_store">Of kies zelf een winkel</string>
+    <string name="save">Sla kaart op</string>
+    <string name="initial_radius">1000 m</string>
+    <string name="show_if_favorite">show if favorite</string>
+    <string name="barcode">barcode</string>
 </resources>

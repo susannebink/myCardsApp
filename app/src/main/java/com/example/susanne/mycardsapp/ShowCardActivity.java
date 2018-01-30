@@ -1,9 +1,4 @@
 package com.example.susanne.mycardsapp;
-/**
- * Google maps functions getLocationPermission, getUserLocation, moveCamera,
- * onRequestPermissionResult, initMap and mapReady are partially from:
- * https://github.com/mitchtabian/Google-Maps-Google-Places/tree/ab0337bee4f658c8708bf89ef7672bdf5de8669a
- */
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -81,7 +76,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         isFavorite = getIntent().getBooleanExtra("favorite", false);
         store = getIntent().getStringExtra("store");
 
-        progressDialog = new ProgressDialog(ShowCardActivity.this);
+        progressDialog = new ProgressDialog(ShowCardActivity.this, R.style.MyDialogTheme);
         progressDialog.setTitle("Kaart aan het laden");
         progressDialog.setMessage("Even geduld aub");
         progressDialog.setCancelable(false); // disable dismiss by tapping outside of the dialog
@@ -104,6 +99,8 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         showRadius = findViewById(R.id.showRadius);
         favoriteButton = findViewById(R.id.favorite);
         storeName.setText(store);
+
+        showRadius.setText(R.string.initial_radius);
 
         if (isFavorite){
             favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
@@ -152,7 +149,10 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
 
                 // Get the information of the selected card.
                 User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
-                String barcode = thisUser.getCardBarcode(store);
+                String barcode = null;
+                if (thisUser != null) {
+                    barcode = thisUser.getCardBarcode(store);
+                }
                 cardNumber.setText(barcode);
                 createImage(barcode);
             }
@@ -341,7 +341,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
      * This function will make the json request and return this.
      */
     public JsonObjectRequest makeRequest(String url){
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+        return new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -363,7 +363,6 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                         Toast.LENGTH_SHORT).show();
             }
         });
-        return request;
     }
 
     /**
@@ -373,8 +372,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         // Check if the results aren't empty.
         if (results.length() == 0){
             Toast.makeText(ShowCardActivity.this,
-                    "Kon gevraagde winkel niet vinden in dit gebied", Toast.LENGTH_SHORT)
-                    .show();
+                    "Kon gevraagde winkel niet vinden in dit gebied", Toast.LENGTH_SHORT).show();
         } else {
             for (int i = 0; i < results.length(); i++) {
                 JSONObject thisStore = (JSONObject) results.get(i);
@@ -415,6 +413,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Update the boolean favorite of the card in the database
                 User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
+                assert thisUser != null;
                 thisUser.updateFavorite(storeName.getText().toString());
 
                 /*

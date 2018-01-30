@@ -45,7 +45,7 @@ public class OverviewActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         id = mAuth.getUid();
 
-        progressDialog = new ProgressDialog(OverviewActivity.this);
+        progressDialog = new ProgressDialog(OverviewActivity.this, R.style.MyDialogTheme);
         progressDialog.setTitle("Kaarten aan het laden");
         progressDialog.setMessage("Even geduld aub");
         progressDialog.setCancelable(false);
@@ -127,6 +127,7 @@ public class OverviewActivity extends AppCompatActivity {
                 if (nUser == null){
                     Toast.makeText(OverviewActivity.this, "Uw lijst is nog leeg, voeg een kaart toe door " +
                             "op de 'Voeg een kaart toe' button te klikken", Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
                 }
                 else {
                     setList(nUser);
@@ -281,7 +282,7 @@ public class OverviewActivity extends AppCompatActivity {
      * the user is updated in the database.
      */
     public void createDialog(final User nUser, final String name){
-        AlertDialog.Builder builder = new AlertDialog.Builder(OverviewActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(OverviewActivity.this, R.style.MyDialogTheme);
         builder.setMessage("Weet u zeker dat u deze kaart wilt verwijderen?").setTitle("Verwijder kaart");
         builder.setPositiveButton("Ja, verwijder deze kaart", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int i) {

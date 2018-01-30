@@ -27,7 +27,6 @@
             android:layout_width="340sp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Naam van de winkel"
             android:textAlignment="center"
             android:textColor="@color/common_google_signin_btn_text_dark_default"
             android:textSize="30sp" />
@@ -37,6 +36,7 @@
             android:layout_width="44sp"
             android:layout_height="44sp"
             android:layout_weight="1"
+            android:contentDescription="@string/show_if_favorite"
             android:background="@android:color/transparent"
             android:onClick="setFavorites"
             tools:layout_editor_absoluteX="302dp"
@@ -72,6 +72,7 @@
 
         <ImageView
             android:id="@+id/cardBarcode"
+            android:contentDescription="@string/barcode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="24sp" />
@@ -115,7 +116,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="1000 m"
             android:textColor="@android:color/white"
             android:textSize="18sp"
             tools:layout_editor_absoluteX="352dp" />
