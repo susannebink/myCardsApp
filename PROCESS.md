@@ -1,10 +1,10 @@
 # MyCardAPP
 Susanne Binkhorst
 ### Day 1
-Made README.md/project proposal
+Made README.md/ project proposal
 
 ### Day 2
-Made DESIGN.md/design document 
+Made DESIGN.md/ design document 
 
 ### Day 3
 Finished DESIGN.md. Started on login and register activity, started up firebase database, create classes.
@@ -38,16 +38,17 @@ Google maps partially works, de user can see its location.
 Google maps user can see location of nearest store in a range of 2000m.
 
 ### Day 13
-User can now see location of nearest store in a range that can vary from 0 to 10000m.
+User can now see location of nearest store in a range that can vary from 0 to 10000m. I decided that I wouldn't implement that a card
+opens automatically when the user is in a store for which you have a card.
 
 ### Day 14
 Worked on layout today. Custom buttons, better UI, etc.
 
 ### Day 15
-Worked on better code, smaller function, better variable names, no magic numbers, etc.
+Worked on better code, smaller functions, better variable names, no magic numbers, etc.
 
 ### Day 16
-
+Started with commenting functions. 
 
 ### Day 17
-
+Finished comments. Let someone try to break my app and read my comments. Added alert and progress dialogs.
