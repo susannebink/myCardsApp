@@ -1,7 +1,8 @@
 # myCardsApp
 
-Geen te lange functies. Liever wat kortere functies die in elkaar worden aangeroepen.
-Een variabele declaratie per regel.
-Class namen in UpperCamelCase en functie, variabelen namen in lowerCamelCase.
-Geen magic numbers.
-Houdt variabele en functie namen logisch en simpel. Gebruik namen niet twee keer.
+* Don't make functions too long, split them in to shorter functions.
+* One variable declariation per line.
+* Class names should be in UpperCamelCase and variables and methods in lowerCamelCase.
+* Avoid magic numbers.
+* Keep variable names short and simple and don't use them twice.
+* Avoid anonymous listeners.
