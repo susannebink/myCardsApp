@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null){
+                    // If user was signed in, go to Overview Activity.
                     goToOverview();
                 }
                 else {
@@ -61,9 +62,11 @@ public class LoginActivity extends AppCompatActivity {
      * Function for the log in of a user, validates email and password.
      */
     public void signIn(View view) {
+        // Get the filled in email and password from the edittextview.
         String email = get_email.getText().toString();
         String password = get_password.getText().toString();
 
+        // Check if everything was filled in correctly.
         if(checkEditText(email, password)){
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -88,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
      * Function to check if the filled in email and password aren't empty.
      */
     public boolean checkEditText(String email, String password){
+        // Check if email and password are filled in.
         if (email.equals("")){
             Toast.makeText(this, "Voer uw e-mail in", Toast.LENGTH_SHORT).show();
             return false;

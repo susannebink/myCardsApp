@@ -1,5 +1,7 @@
 package com.example.susanne.mycardsapp;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class User {
         this.cards = nCards;
     }
 
+    @Exclude
     public ArrayList<String> getCardNames(){
         List<Card> allCards = this.cards;
         ArrayList<String> allNames = new ArrayList<>() ;
@@ -37,6 +40,7 @@ public class User {
         return allNames;
     }
 
+    @Exclude
     public String getCardBarcode(String name){
         String barcode = "";
         for (int i = 0; i < cards.size(); i++){
@@ -48,10 +52,12 @@ public class User {
         return barcode;
     }
 
+    @Exclude
     public void addCard(Card aCard){
         this.cards.add(aCard);
     }
 
+    @Exclude
     public boolean checkCard(String cardName){
         List<Card> allCards = this.cards;
         for (int i = 0; i < allCards.size(); i++){
@@ -63,6 +69,7 @@ public class User {
         return false;
     }
 
+    @Exclude
     public void updateCard(String cardName, String newBarcode){
         List<Card> allCards = this.cards;
         for (int i = 0; i < allCards.size(); i++){
@@ -74,6 +81,7 @@ public class User {
         }
     }
 
+    @Exclude
     public void deleteCard(String cardName) {
         List<Card> allCards = this.cards;
         for (int i = 0; i < allCards.size(); i++){
@@ -84,6 +92,7 @@ public class User {
         }
     }
 
+    @Exclude
     public ArrayList<String> getFavorites(){
         List<Card> allCards = this.cards;
         ArrayList<String> favorites = new ArrayList<>() ;
@@ -96,6 +105,7 @@ public class User {
         return favorites;
     }
 
+    @Exclude
     public void updateFavorite(String name){
         for (int i = 0; i < this.cards.size(); i++){
             Card currentCard = this.cards.get(i);

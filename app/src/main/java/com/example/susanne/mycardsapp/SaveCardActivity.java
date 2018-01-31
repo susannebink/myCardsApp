@@ -29,8 +29,6 @@ import com.google.zxing.common.BitMatrix;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.example.susanne.mycardsapp.OverviewActivity.id;
-
 public class SaveCardActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     FirebaseAuth mAuth;
@@ -40,6 +38,7 @@ public class SaveCardActivity extends AppCompatActivity {
     String barcodeNumber;
     EditText getStoreName;
     String storeName;
+    String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +47,7 @@ public class SaveCardActivity extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        id = mAuth.getUid();
 
         // Set the spinner with store names.
         setSpinner();

@@ -34,7 +34,7 @@ public class OverviewActivity extends AppCompatActivity {
     int numberOfFavorites;
     int numberOfNormal;
     ProgressDialog progressDialog;
-    static String id;
+    String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,8 +209,24 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     /**
+     * Make a dialog with instructions for how to delete a card.
+     */
+    public void showInstructions(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(OverviewActivity.this, R.style.MyDialogTheme);
+        builder.setMessage("U kunt een kaart verwijderen door deze langere tijd ingedrukt te houden in uw lijst.").setTitle("Verwijder kaarten");
+        builder.setNeutralButton("Ik snap het", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
      * Define the on item long click listener for the myCards listview. The card that was clicked
      * will be deleted from the database.
+     *
      */
     private class ListOnItemLongClickListener implements AdapterView.OnItemLongClickListener{
         @Override

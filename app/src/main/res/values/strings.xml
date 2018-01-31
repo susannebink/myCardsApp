@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">myCardsApp</string>
+    <string name="app_name">CardWallet</string>
     <string name="overview_title">Mijn Kaarten</string>
     <string name="e_mail">E-mail</string>
     <string name="register_password">Wachtwoord (minimaal 6 tekens)</string>
@@ -15,4 +15,5 @@
     <string name="initial_radius">1000 m</string>
     <string name="show_if_favorite">show if favorite</string>
     <string name="barcode">barcode</string>
+    <string name="delete_instructions">To get description for how to delete a card</string>
 </resources>

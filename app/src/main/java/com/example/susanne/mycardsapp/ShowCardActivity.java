@@ -45,8 +45,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.susanne.mycardsapp.OverviewActivity.id;
-
 public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCallback{
     DatabaseReference databaseReference;
     FirebaseAuth mAuth;
@@ -61,6 +59,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
     Boolean isFavorite;
     ImageButton favoriteButton;
     Location myLocation;
+    String id;
     private static final int REQUEST_CODE = 1111;
     private Float DEFAULT_ZOOM = 13f;
     private Boolean locationPermission = false;
@@ -72,19 +71,29 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        id = mAuth.getUid();
 
+        // Get the card information from the intent.
         isFavorite = getIntent().getBooleanExtra("favorite", false);
         store = getIntent().getStringExtra("store");
 
+        // Make a progress dialog while the information is loading.
         progressDialog = new ProgressDialog(ShowCardActivity.this, R.style.MyDialogTheme);
         progressDialog.setTitle("Kaart aan het laden");
         progressDialog.setMessage("Even geduld aub");
         progressDialog.setCancelable(false); // disable dismiss by tapping outside of the dialog
         progressDialog.show();
 
+        // Set all necessary views for activity.
         setViews();
+
+        // Set the seekbar to set radius of nearest store.
         setSeekBar();
+
+        // Get the card information.
         getStoreCard();
+
+        // Get permission for user's location.
         getLocationPermission();
     }
 
@@ -102,6 +111,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
 
         showRadius.setText(R.string.initial_radius);
 
+        // Set the corresponding favorite image button.
         if (isFavorite){
             favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
         } else{
@@ -153,6 +163,8 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                 if (thisUser != null) {
                     barcode = thisUser.getCardBarcode(store);
                 }
+
+                // Set the barcode information on the views.
                 cardNumber.setText(barcode);
                 createImage(barcode);
             }
@@ -170,7 +182,10 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
      */
     public void createImage(String thisBarcode){
         try {
+            // Set the image of the barcode.
             barcode.setImageBitmap(SaveCardActivity.createBarcode(thisBarcode));
+
+            // Dismiss the progress dialog when the barcode image was set.
             progressDialog.dismiss();
         } catch (WriterException e) {
             Toast.makeText(ShowCardActivity.this, "Barcode kon niet geladen worden",
@@ -186,6 +201,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
+        // Check if all location permissions where given, if true, initialize the map.
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
@@ -216,6 +232,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         FusedLocationProviderClient mClient =
                 LocationServices.getFusedLocationProviderClient(this);
         try{
+            // If user has given location permission, get the user's last known location.
             if(locationPermission){
                 final Task location = mClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
@@ -262,11 +279,10 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         locationPermission = false;
         switch (requestCode){
             case REQUEST_CODE:{
+                /* Check all the permission request results if one of them is false,
+                 * set the boolean locationPermission false.
+                 */
                 if (grantResults.length > 0){
-
-                    /* Check all the permission request results if one of them is false,
-                     * set the boolean locationPermission false.
-                     */
                     for (int grantResult : grantResults) {
                         if (grantResult == PackageManager.PERMISSION_DENIED) {
                             locationPermission = false;
@@ -297,8 +313,10 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        // Set the loaded google maps map on the map fragment.
         mMap = googleMap;
         if (locationPermission){
+            // Get the user's location.
             getUserLocation();
 
             // Check the fine location and coarse location permission again.
@@ -321,6 +339,10 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
      * JSONRequest to google maps places.
      */
     public void getNearestStore(int radius) {
+        /*
+         * Url for json request to google maps places. The request consists of the current location
+         * of the user, the chosen radius, the name of the store and the API key for google places.
+         */
         String url =
                 "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
                         + myLocation.getLatitude() + "," + myLocation.getLongitude()
@@ -377,7 +399,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
             for (int i = 0; i < results.length(); i++) {
                 JSONObject thisStore = (JSONObject) results.get(i);
 
-                // Get the location and the opening hours of the stores.
+                // Get the location and the opening hours of the store.
                 JSONObject storeLocation =
                         thisStore.getJSONObject("geometry").getJSONObject("location");
                 Boolean openNow =
@@ -411,7 +433,7 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // Update the boolean favorite of the card in the database
+                // Update the boolean favorite of the card in the database.
                 User thisUser = dataSnapshot.child("Users").child(id).getValue(User.class);
                 assert thisUser != null;
                 thisUser.updateFavorite(storeName.getText().toString());
@@ -427,6 +449,8 @@ public class ShowCardActivity extends AppCompatActivity implements OnMapReadyCal
                     favoriteButton.setImageResource(android.R.drawable.btn_star_big_on);
                     isFavorite = true;
                 }
+
+                // Add the new value to the database.
                 databaseReference.child("Users").child(id).setValue(thisUser);
             }
             @Override

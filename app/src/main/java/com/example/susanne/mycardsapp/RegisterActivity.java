@@ -39,11 +39,12 @@ public class RegisterActivity extends AppCompatActivity {
      * correct.
      */
     public void signUp(View view){
+        // Get email, password and password confirmation from the views.
         String email = get_email.getText().toString();
         String password = get_password.getText().toString();
         String confirmation = get_confirmation.getText().toString();
 
-        // Sign user up.
+        // Sign up user after a check.
         if(checkEditText(email, password, confirmation)) {
             FirebaseAuthentication(email, password);
         }
