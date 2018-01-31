@@ -45,6 +45,7 @@ public class OverviewActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         id = mAuth.getUid();
 
+        // Make an (non-cancelable) progressdialog while loading all cards.
         progressDialog = new ProgressDialog(OverviewActivity.this, R.style.MyDialogTheme);
         progressDialog.setTitle("Kaarten aan het laden");
         progressDialog.setMessage("Even geduld aub");
@@ -127,6 +128,7 @@ public class OverviewActivity extends AppCompatActivity {
                 if (nUser == null){
                     Toast.makeText(OverviewActivity.this, "Uw lijst is nog leeg, voeg een kaart toe door " +
                             "op de 'Voeg een kaart toe' button te klikken", Toast.LENGTH_LONG).show();
+                    // Dismiss the progressdialog because there are no card to load.
                     progressDialog.dismiss();
                 }
                 else {
@@ -178,6 +180,8 @@ public class OverviewActivity extends AppCompatActivity {
         myCards.setAdapter(makeCardsAdapter(allCards));
         myCards.setOnItemClickListener(new ListOnItemClickListener());
         myCards.setOnItemLongClickListener(new ListOnItemLongClickListener());
+
+        // Dismiss the progress dialog because all cards are loaded.
         progressDialog.dismiss();
     }
 
