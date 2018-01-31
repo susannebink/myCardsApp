@@ -1,3 +1,4 @@
+# CardWallet
 ## Short Discription
 With this app, you will be able to store all your customer and privilage cards in one place. Just scan the barcode of your card and you
 can easily access it via your phone. Find the nearest store for all your cards and add them to your favorites.
@@ -54,6 +55,9 @@ favorite.The only method of this class is setFavorite, this will update the favo
 ## Process
 The difficulties from this app where the barcode scanner and the google maps map. I had to to a lot of research on the internet before
 I got something that I could use and that worked. 
+I didn't implement the automatic opening of a card when in the store due to time and because of probable difficulties with shopping 
+malls. Instead of this I implemented a favorites lists, so that the frequent used cards are easy to find. If I would have been given 
+more time, I would have liked to look into the automatic opening of cards.
 
 ### Barcode scanner
 The difficulties with the barcode scanner were to open the camera, scan the barcode and reproduce the barcode as an image. At first I
