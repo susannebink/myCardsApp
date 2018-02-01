@@ -11,6 +11,9 @@ your privilage card to shop.
 <img src="doc/Screenshot_1.png" alt="Screenshot" width="250" heigth="450" /> <img src="doc/Screenshot_3.png" alt="Screenshot" width="250" heigth="450" /> <img src="doc/Screenshot_4.png" alt="Screenshot" width="250" heigth="450" />
 <img src="doc/Screenshot_5.png" alt="Screenshot" width="250" heigth="450" /><img src="doc/Screenshot_6.png" alt="Screenshot" width="250" heigth="450" /><img src="doc/Screenshot_7.png" alt="Screenshot" width="250" heigth="450" />
 
+## Demo
+https://www.youtube.com/watch?v=yBVGJ7AXEuA
+
 ## External code
 External codes are implemented in AddCardActivity, SaveCardActivity and ShowCardActivity.
 * https://www.androidhive.info/2017/08/android-barcode-scanner-using-google-mobile-vision-building-movie-tickets-app/
