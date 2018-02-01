@@ -3,7 +3,7 @@
 With this app, you will be able to store all your customer and privilage cards in one place. Just scan the barcode of your card and you
 can easily access it via your phone. Find the nearest store for all your cards and add them to your favorites.
 
-<img src="doc/Screenshot_4.png" alt="visual sketch" width="400" height="600"/>
+<img src="doc/Screenshot_4.png" alt="visual sketch" width="300" height="500"/>
 
 ## Technical Design
 ### LoginActivity.java
