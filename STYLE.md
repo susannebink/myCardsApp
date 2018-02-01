@@ -1,4 +1,4 @@
-# myCardsApp
+# CardWallet
 
 * Don't make functions too long, split them in to shorter functions.
 * One variable declariation per line.
