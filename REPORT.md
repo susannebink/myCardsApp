@@ -55,9 +55,14 @@ favorite.The only method of this class is setFavorite, this will update the favo
 ## Process
 The difficulties from this app where the barcode scanner and the google maps map. I had to to a lot of research on the internet before
 I got something that I could use and that worked. 
-I didn't implement the automatic opening of a card when in the store due to time and because of probable difficulties with shopping 
-malls. Instead of this I implemented a favorites lists, so that the frequent used cards are easy to find. If I would have been given 
-more time, I would have liked to look into the automatic opening of cards.
+
+### Automatic opening
+I didn't implement the automatic opening of a card when in the store because of time problems, probable difficulties with shopping 
+malls and the google maps API. The problems with the google maps API is that when you are in a store, and you try to find nearby places,
+to store won't be found unless you give the exact name of the store instead of just the type store or point of interest. I didn't have
+enough time to find another possible solution for this. Instead of this I implemented a favorites lists, so that the frequent used cards
+are easy to find. If I would have been given more time, I would have liked to look into the possibilities of the google places API or
+perhaps an other API.
 
 ### Barcode scanner
 The difficulties with the barcode scanner were to open the camera, scan the barcode and reproduce the barcode as an image. At first I
@@ -70,7 +75,10 @@ The difficulties with the map where displaying the map in a mapview/fragment in 
 nearest of a selected store. To display the map and the current location I used some of the code of the github from mitchtabian <sup>3</sup> and some of my own thinking. To find the nearest location of a store I used the google places API for nearby search 
 <sup>4</sup>.
 
-## Footnotes
+## Demo
+https://youtu.be/yBVGJ7AXEuA
+
+## References
 1. https://www.androidhive.info/2017/08/android-barcode-scanner-using-google-mobile-vision-building-movie-tickets-app/
 2. https://github.com/zxing/zxing
 3. https://github.com/mitchtabian/Google-Maps-Google-Places/tree/ab0337bee4f658c8708bf89ef7672bdf5de8669a
