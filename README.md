@@ -8,12 +8,8 @@ card on your app. Now you can find the card of the store more easily and it save
 your privilage card to shop. 
 
 ## Screenshots
-<img src="doc/Screenshot_1.png" alt="Screenshot" width="300" heigth="500" /> 
-<img src="doc/Screenshot_3.png" alt="Screenshot" width="300" heigth="500" />
-<img src="doc/Screenshot_4.png" alt="Screenshot" width="300" heigth="500" />
-<img src="doc/Screenshot_5.png" alt="Screenshot" width="300" heigth="500" />
-<img src="doc/Screenshot_6.png" alt="Screenshot" width="300" heigth="500" />
-<img src="doc/Screenshot_7.png" alt="Screenshot" width="300" heigth="500" />
+<img src="doc/Screenshot_1.png" alt="Screenshot" width="250" heigth="450" /> <img src="doc/Screenshot_3.png" alt="Screenshot" width="250" heigth="450" /> <img src="doc/Screenshot_4.png" alt="Screenshot" width="250" heigth="450" />
+<img src="doc/Screenshot_5.png" alt="Screenshot" width="250" heigth="450" /><img src="doc/Screenshot_6.png" alt="Screenshot" width="250" heigth="450" /><img src="doc/Screenshot_7.png" alt="Screenshot" width="250" heigth="450" />
 
 ## External code
 External codes are implemented in AddCardActivity, SaveCardActivity and ShowCardActivity.
