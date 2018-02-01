@@ -97,13 +97,13 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
-        android:onClick="showInstructions"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/delete_instructions"
+        android:onClick="showInstructions"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_delete"
-        android:contentDescription="@string/delete_instructions" />
+        app:srcCompat="@android:drawable/ic_menu_delete" />
 
 </android.support.constraint.ConstraintLayout>
