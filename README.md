@@ -19,3 +19,5 @@ External codes are implemented in AddCardActivity, SaveCardActivity and ShowCard
 ## Libraries
 * https://github.com/zxing/zxing
 * https://developers.google.com/places/web-service/search
+
+Copyright (c) 2018 Susanne Binkhorst 
