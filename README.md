@@ -1,37 +1,25 @@
-# myCardsApp
+# CardWallet
 Susanne Binkhorst
 
-## Problem statement
+## Purpose
 These days every store has some kind of customer of privilage card. When you have a card of each of these stores your wallet will get to 
-full and it can be hard to find the correct card at the cassiere. With my app, this problem will be solved. You can scan and save each card
-on your app. Now you can find the card of the store more easily and it saves a lot of space in your wallet. Find the nearest store of your
-privilage card to shop. 
+full and it can be hard to find the correct card at the cassiere. With my app, this problem will be solved. You can scan and save each 
+card on your app. Now you can find the card of the store more easily and it saves a lot of space in your wallet. Find the nearest store of
+your privilage card to shop. 
 
-## Solution
-### Summary
-Save all your customer and privilage cards in one app.
+## Screenshots
+<img src="doc/Screenshot_1.png" alt="Screenshot" width="300" heigth="500" /> 
+<img src="doc/Screenshot_3.png" alt="Screenshot" width="300" heigth="500" />
+<img src="doc/Screenshot_4.png" alt="Screenshot" width="300" heigth="500" />
+<img src="doc/Screenshot_5.png" alt="Screenshot" width="300" heigth="500" />
+<img src="doc/Screenshot_6.png" alt="Screenshot" width="300" heigth="500" />
+<img src="doc/Screenshot_7.png" alt="Screenshot" width="300" heigth="500" />
 
-### Visual Sketch
-<img src="doc/project_schets.png" alt="visual sketch" width="700" height="400"/>
+## External code
+External codes are implemented in AddCardActivity, SaveCardActivity and ShowCardActivity.
+* https://www.androidhive.info/2017/08/android-barcode-scanner-using-google-mobile-vision-building-movie-tickets-app/
+* https://github.com/mitchtabian/Google-Maps-Google-Places/tree/ab0337bee4f658c8708bf89ef7672bdf5de8669a
 
-### Main features
-* **Register**
-* **Login**
-* **Add cards**
-* **Scan barcodes with backcamera**
-* **See saved cards and show barcode**
-* **Show nearest store**
-
-### Prerequisites
-* **Data Source: https://developers.google.com/maps/documentation/android-api/**
-* **External Components: firebase**
-* **API for barcode: https://developers.google.com/vision/android/barcodes-overview**
-
-#### Review similar app (Stocard):
-What makes my app different from the existing app is that the user can log in. That is usefull so that when you switch phones, you can
-easily get your cards back. Also you can share your account with the rest of the household. 
-
-
-#### Hardest parts:
-* **Scanning the barcodes**
-* **Saving the barcodes to the user's profile**
+## Libraries
+* https://github.com/zxing/zxing
+* https://developers.google.com/places/web-service/search
