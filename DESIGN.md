@@ -1,4 +1,4 @@
-# myCardsApp
+# CardWallet
 Susanne Binkhorst
 
 ## Advanced scetch
