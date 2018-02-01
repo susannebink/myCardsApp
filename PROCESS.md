@@ -1,4 +1,4 @@
-# MyCardAPP
+# CardWallet
 Susanne Binkhorst
 ### Day 1
 Made README.md/ project proposal
